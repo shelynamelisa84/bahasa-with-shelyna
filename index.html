@@ -150,7 +150,7 @@
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'id-ID';
-                utterance.rate = 0.85; // Bicara sedikit santai agar mudah dipelajari
+                utterance.rate = 0.85;
                 window.speechSynthesis.speak(utterance);
             } else {
                 alert('Browser Anda belum mendukung audio pronunciation bawaan.');
@@ -166,7 +166,6 @@
         let activeQuestions = [];
         let selectedAnswers = {};
 
-        // Inisialisasi Auth State
         async function initAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             updateUI(session);
@@ -183,7 +182,6 @@
 
             if (session) {
                 currentUserId = session.user.id;
-                // Ambil data profile
                 const { data: profile } = await supabase
                     .from('profiles')
                     .select('*')
@@ -241,11 +239,9 @@
             await supabase.auth.signOut();
         }
 
-        // Memuat Materi Pembelajaran & Kosakata
         async function loadLessons() {
             const container = document.getElementById('lessons-list');
             
-            // Ambil materi dari Supabase
             const { data: lessons, error: lError } = await supabase
                 .from('lessons')
                 .select('*')
@@ -258,13 +254,11 @@
 
             let html = '';
             for (const lesson of lessons) {
-                // Ambil kosakata untuk lesson ini
                 const { data: vocabs } = await supabase
                     .from('vocabularies')
                     .select('*')
                     .eq('lesson_id', lesson.id);
 
-                // Ambil kuis terkait jika ada
                 const { data: quizzes } = await supabase
                     .from('quizzes')
                     .select('*')
@@ -287,7 +281,6 @@
                             ` : ''}
                         </div>
 
-                        <!-- Daftar Kosakata -->
                         <div class="border-t border-pink-50 pt-4">
                             <h4 class="text-xs font-bold text-pink-400 uppercase tracking-wider mb-3">Kosakata & Pengucapan</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -310,7 +303,6 @@
             container.innerHTML = html;
         }
 
-        // Logika Kuis Server-Side
         async function startQuiz(quizId, quizTitle) {
             if (!currentUserId) {
                 alert('Silakan masuk akun terlebih dahulu untuk mengerjakan kuis dan menyimpan poin!');
@@ -324,7 +316,6 @@
             document.getElementById('quiz-result').classList.add('hidden');
             document.getElementById('quiz-submit-btn').classList.remove('hidden');
 
-            // Ambil pertanyaan dari database
             const { data: questions, error } = await supabase
                 .from('quiz_questions')
                 .select('id, question_text, question_type, options')
@@ -375,7 +366,6 @@
                 return;
             }
 
-            // Panggil RPC database yang kita buat sebelumnya untuk validasi nilai yang aman
             const { data, error } = await supabase.rpc('submit_quiz_attempt', {
                 p_quiz_id: activeQuizId,
                 p_answers: selectedAnswers
@@ -397,7 +387,6 @@
                 ${data.passed ? `<p class="text-xs text-pink-600 font-extrabold mt-2">+${data.earned_xp} XP &bull; +${data.earned_stars} Stars</p>` : ''}
             `;
 
-            // Refresh status poin user di banner
             const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUserId).single();
             if (profile) {
                 document.getElementById('stat-xp').textContent = profile.xp;
@@ -409,7 +398,6 @@
             document.getElementById('quiz-modal').className = "hidden";
         }
 
-        // Jalankan saat halaman dibuka
         initAuth();
     </script>
 </body>
