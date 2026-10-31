@@ -1,97 +1,416 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#fce8ef">
-<title>Bahasa with Shelyna 🌷</title>
-<style>
-:root{--pink:#f5c9d8;--pink2:#fce8ef;--rose:#bc668a;--ink:#68465a;--lav:#eee8ff;--yellow:#fff2d4;--green:#e8f5ed;--muted:#987d8b;--paper:#fffdfd}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#fff8fa,#f8f3ff 55%,#fff9ed);font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:var(--ink);min-height:100vh}
-button,input{font:inherit}button{cursor:pointer;border:0}
-.app{max-width:820px;margin:28px auto;padding:0 16px 30px}
-header{background:var(--pink2);border:1px solid #f5d4e0;border-radius:26px;padding:22px;box-shadow:0 8px 28px #a85e7912}
-.brand{display:flex;align-items:center;gap:13px}.logo{width:54px;height:54px;border-radius:18px;background:white;display:grid;place-items:center;font-size:29px}
-h1{font-size:clamp(24px,5vw,34px);margin:0;color:#9d5274} .tag{margin:4px 0 0;color:var(--muted);font-size:13px}
-.welcome{background:white;border-radius:20px;padding:18px;margin-top:18px}.eyebrow{font-size:11px;letter-spacing:1.4px;font-weight:800;color:#ae7991}
-h2{margin:6px 0 12px;font-size:22px}.student{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.student input{flex:1;min-width:170px;border:1px solid #ecd8e1;border-radius:12px;padding:11px 13px;color:var(--ink);outline-color:#d98eae}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.stat{background:#fff;border-radius:15px;padding:12px;text-align:center}.stat strong{display:block;font-size:22px}.stat span{font-size:11px;color:var(--muted)}
-nav{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap}nav button{flex:1;min-width:90px;padding:12px;border-radius:14px;background:#fff;color:#9b7185;font-weight:700;border:1px solid #f0e2e9}nav button.active{background:#bd7896;color:#fff;border-color:#bd7896}
-.panel{background:#fff;border:1px solid #f1e6eb;border-radius:22px;padding:22px;box-shadow:0 8px 28px #a85e790c}.hidden{display:none}
-h3{margin:0 0 14px;color:#a85f80;font-size:21px}.card{padding:17px;border-radius:17px;margin:12px 0}.yellow{background:var(--yellow)}.lav{background:var(--lav)}.green{background:var(--green)}.pink{background:var(--pink2)}
-.big{font-size:28px;font-weight:800;color:#a87936}.muted{color:var(--muted);font-size:13px;line-height:1.5}
-.progress{height:10px;background:#f1e9ed;border-radius:20px;overflow:hidden;margin-top:8px}.progress>div{height:100%;width:10%;background:#e59bb7;border-radius:20px;transition:width .3s}
-table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:9px 7px;border-bottom:1px solid #ffffffaa}th{color:#96647d;font-size:12px}
-.vocab{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.word{background:#fff;border:1px solid #f0e2e9;border-radius:13px;padding:12px}.word b{display:block}.word small{color:var(--muted)}
-.primary{background:#bd7896;color:white;border-radius:13px;padding:12px 17px;font-weight:800}.secondary{background:#f7eaf0;color:#9c5d7b;border-radius:13px;padding:11px 15px;font-weight:700}.answers{display:grid;gap:9px;margin:15px 0}.answers button{text-align:left;padding:13px;border:1px solid #eadde4;border-radius:13px;background:#fff;color:var(--ink)}.answers button.selected{border:2px solid #c47c9c;background:#fff2f7}.feedback{padding:14px;border-radius:14px;margin-top:13px;font-weight:650}
-footer{text-align:center;color:#a98b99;font-size:12px;padding:18px}
-@media(max-width:520px){.app{margin:12px auto}.panel{padding:17px}.vocab{grid-template-columns:1fr}.stats{gap:7px}.stat{padding:10px 5px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bahasa with Shelyna 🌷</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bubbly-button {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .bubbly-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
-<body>
-<div class="app">
-<header>
- <div class="brand"><div class="logo">🌷</div><div><h1>Bahasa with Shelyna</h1><p class="tag">Your little Indonesian classroom · 🇮🇩</p></div></div>
- <div class="welcome">
-  <div class="eyebrow">SELAMAT DATANG!</div><h2>Halo, <span id="helloName">student</span>! 👋</h2>
-  <div class="student"><label for="studentName">Student name</label><input id="studentName" placeholder="Enter your name" maxlength="35"></div>
-  <div class="stats">
-   <div class="stat"><strong id="stars">5 ⭐</strong><span>Total stars</span></div>
-   <div class="stat"><strong>01</strong><span>Lessons</span></div>
-   <div class="stat"><strong>A+</strong><span>Last grade</span></div>
-  </div>
- </div>
-</header>
-<nav>
- <button class="active" data-tab="home">🏠 Home</button><button data-tab="lesson">📚 Lesson</button><button data-tab="quiz">✏️ Quiz</button>
-</nav>
-<main>
-<section class="panel" id="home">
- <h3>Your learning journey ✨</h3>
- <div class="card yellow"><div class="eyebrow">TODAY'S ACHIEVEMENT</div><div class="big">5 / 5 Stars! ⭐</div><p>Excellent work! You learned how Indonesian numbers work.</p><span class="muted">Teacher Shelyna is proud of you.</span></div>
- <b>Your learning progress</b><div class="muted">Beginner journey · 10%</div><div class="progress"><div></div></div>
- <div class="card lav"><b>💌 A little note from your teacher</b><p>“You're a pretty good student! I hope you're enjoying learning my language as much as I'm enjoying teaching you. Don't disappoint me in the next lesson! 😂”</p><div style="text-align:right">— Shelyna ♡</div></div>
- <div class="card green"><b>📖 Lesson 01: Indonesian Numbers</b><p class="muted">31 October 2026 · Completed · 5 stars</p></div>
-</section>
-<section class="panel hidden" id="lesson">
- <h3>Lesson 01 📚</h3><p><b>Indonesian numbers: The basics</b></p>
- <div class="card yellow"><b>1. Numbers 1–5</b><table><tr><th>Indonesian</th><th>English</th></tr><tr><td>Satu</td><td>One</td></tr><tr><td>Dua</td><td>Two</td></tr><tr><td>Tiga</td><td>Three</td></tr><tr><td>Empat</td><td>Four</td></tr><tr><td>Lima</td><td>Five</td></tr></table></div>
- <div class="card green"><b>2. The special number 11–19</b><p>Indonesian uses <i>belas</i> for numbers 11–19.</p><table><tr><td>Sebelas</td><td>Eleven</td></tr><tr><td>Dua belas</td><td>Twelve</td></tr><tr><td>Tiga belas</td><td>Thirteen</td></tr><tr><td>Empat belas</td><td>Fourteen</td></tr></table></div>
- <div class="card lav"><b>3. When do we use “se”?</b><p><i>Satu</i> means one. <i>Se-</i> is a shortened form used in certain words:</p><ul><li>Sebelas = eleven</li><li>Seratus = one hundred</li><li>Seribu = one thousand</li></ul><span class="muted">See? Indonesian can be tricky! 😜</span></div>
- <div class="card pink"><b>Today's new vocabulary 💗</b><div class="vocab">
- <div class="word"><b>Pintar</b><small>Smart</small></div><div class="word"><b>Belajar</b><small>To learn</small></div><div class="word"><b>Murid</b><small>Student</small></div><div class="word"><b>Guru</b><small>Teacher</small></div><div class="word"><b>Semangat</b><small>Keep going / enthusiasm</small></div><div class="word"><b>Hebat</b><small>Amazing</small></div></div></div>
- <button class="primary" onclick="showTab('quiz')">Take today's quiz →</button>
-</section>
-<section class="panel hidden" id="quiz">
- <h3>Mini Quiz ✏️</h3><div class="card lav"><div class="eyebrow">QUESTION 01 OF 01</div><h2>How do you say eleven in Indonesian?</h2><p class="muted">Choose the correct answer below.</p></div>
- <div class="answers" id="answers"><button data-answer="satu belas">A. Satu belas</button><button data-answer="sebelas">B. Sebelas</button><button data-answer="satu puluh satu">C. Satu puluh satu</button></div>
- <button class="primary" id="checkAnswer">Check my answer</button><div id="feedback" aria-live="polite"></div>
- <div class="card pink" style="margin-top:20px"><b>Homework from Teacher Shelyna 📝</b><p>Record a voice note counting from 1 to 20 in Indonesian. No Google Translate allowed! 😂</p><label><input type="checkbox" id="homework"> I promise to do my homework!</label></div>
-</section>
-</main>
-<footer>Terima kasih! ♡<br>Made with love, patience and a little bit of teasing.<br>Bahasa with Shelyna · Jakarta, Indonesia 🇮🇩</footer>
-</div>
-<script>
-const $=s=>document.querySelector(s);
-function showTab(name){document.querySelectorAll('main .panel').forEach(p=>p.classList.toggle('hidden',p.id!==name));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name))}
-document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
-const nameInput=$('#studentName');
-nameInput.value=localStorage.getItem('bws_name')||'';
-function updateName(){const n=nameInput.value.trim()||'student';$('#helloName').textContent=n;localStorage.setItem('bws_name',nameInput.value)}
-nameInput.addEventListener('input',updateName);updateName();
-let extraStars=Number(localStorage.getItem('bws_extra_stars')||0);
-function updateStars(){$('#stars').textContent=(5+extraStars)+' ⭐'}updateStars();
-let selected='';
-document.querySelectorAll('#answers button').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.answer;document.querySelectorAll('#answers button').forEach(x=>x.classList.toggle('selected',x===b));$('#feedback').innerHTML='';}));
-$('#checkAnswer').addEventListener('click',()=>{
- if(!selected){$('#feedback').innerHTML='<div class="feedback" style="background:#fff2d4">Choose an answer first! 😊</div>';return}
- if(selected==='sebelas'){
-  if(localStorage.getItem('bws_quiz_correct')!=='yes'){extraStars++;localStorage.setItem('bws_extra_stars',extraStars);localStorage.setItem('bws_quiz_correct','yes');updateStars()}
-  $('#feedback').innerHTML='<div class="feedback" style="background:#e8f5ed;color:#367d58">Correct! 🎉 Excellent! You earned a star. Another step closer to fluency!</div>';
- }else{$('#feedback').innerHTML='<div class="feedback" style="background:#fff2d4;color:#98713d">Not quite! 😝 The correct answer is <b>Sebelas</b>. Remember, eleven is a special number!</div>'}
-});
-$('#homework').checked=localStorage.getItem('bws_homework')==='yes';
-$('#homework').addEventListener('change',e=>localStorage.setItem('bws_homework',e.target.checked?'yes':'no'));
-</script>
+<body class="bg-[#FFF8F9] text-gray-800 min-h-screen flex flex-col">
+
+    <!-- KONFIGURASI SUPABASE -->
+    <script>
+        const SUPABASE_URL = "https://iblljzbveloonfumuarw.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_lcyCSzCFXr87S2_7pXLRTQ_M9LFh7mo";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-white border-b-2 border-pink-100 sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="text-3xl">🌷</span>
+                <span class="font-extrabold text-xl text-pink-500 tracking-tight">Bahasa with Shelyna</span>
+            </div>
+            
+            <div id="auth-status" class="flex items-center space-x-4">
+                <!-- Status User / Tombol Login diinject via JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-5xl mx-auto flex-1 w-full p-6 space-y-8">
+
+        <!-- HERO SECTION (STATUS MURID & GAMIFIKASI) -->
+        <section id="stats-banner" class="hidden bg-pink-100 border-2 border-pink-200 rounded-3xl p-6 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Halo, <span id="user-display-name">Teman Belajar</span>! ✨</h1>
+                    <p class="text-pink-600 font-semibold text-sm">Semangat belajar Bahasa Indonesia hari ini!</p>
+                </div>
+                <div class="flex space-x-4">
+                    <div class="bg-white px-4 py-2 rounded-2xl border-2 border-pink-200 flex items-center space-x-2 shadow-sm">
+                        <span class="text-xl">⚡</span>
+                        <div>
+                            <p class="text-xs text-gray-400 font-bold uppercase">XP</p>
+                            <p id="stat-xp" class="text-base font-extrabold text-gray-700">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white px-4 py-2 rounded-2xl border-2 border-yellow-200 flex items-center space-x-2 shadow-sm">
+                        <span class="text-xl">⭐</span>
+                        <div>
+                            <p class="text-xs text-gray-400 font-bold uppercase">Stars</p>
+                            <p id="stat-stars" class="text-base font-extrabold text-gray-700">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white px-4 py-2 rounded-2xl border-2 border-orange-200 flex items-center space-x-2 shadow-sm">
+                        <span class="text-xl">🔥</span>
+                        <div>
+                            <p class="text-xs text-gray-400 font-bold uppercase">Streak</p>
+                            <p id="stat-streak" class="text-base font-extrabold text-gray-700">0 Hari</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEACHER DASHBOARD BADGE (KHUSUS TEACHER) -->
+        <section id="teacher-panel" class="hidden bg-purple-50 border-2 border-purple-200 rounded-3xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="bg-purple-200 text-purple-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Private Access</span>
+                    <h2 class="text-xl font-bold text-purple-900 mt-2">Shelyna's Teacher Dashboard 👩‍🏫</h2>
+                </div>
+                <button onclick="alert('Fitur tambah materi langsung akan aktif pada sub-modul berikutnya!')" class="bg-purple-600 text-white font-bold px-4 py-2 rounded-2xl shadow hover:bg-purple-700">
+                    + Tambah Modul Baru
+                </button>
+            </div>
+            <p class="text-sm text-purple-700">Anda masuk sebagai Teacher. Anda dapat melihat kunci jawaban, mengelola kuis, dan memeriksa submission tugas.</p>
+        </section>
+
+        <!-- LESSONS & VOCABULARY ACCORDION -->
+        <section class="space-y-6">
+            <h2 class="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
+                <span>📚</span> Daftar Pembelajaran
+            </h2>
+
+            <div id="lessons-list" class="space-y-6">
+                <!-- Data modul dari database dimuat di sini -->
+                <p class="text-gray-400 font-medium">Memuat materi pembelajaran...</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL AUTHENTICATION -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl border-2 border-pink-100 max-w-sm w-full p-6 shadow-xl space-y-4">
+            <h3 class="text-xl font-bold text-gray-800 text-center">Masuk ke Kelas 🌷</h3>
+            <div class="space-y-3">
+                <input id="auth-email" type="email" placeholder="Email" class="w-full px-4 py-3 rounded-2xl border-2 border-gray-100 focus:outline-none focus:border-pink-300 font-medium text-sm">
+                <input id="auth-password" type="password" placeholder="Password" class="w-full px-4 py-3 rounded-2xl border-2 border-gray-100 focus:outline-none focus:border-pink-300 font-medium text-sm">
+                <button onclick="handleLogin()" class="w-full bg-pink-500 text-white font-extrabold py-3 rounded-2xl shadow hover:bg-pink-600 bubbly-button">
+                    Masuk
+                </button>
+            </div>
+            <button onclick="toggleModal(false)" class="w-full text-center text-xs font-bold text-gray-400 hover:text-gray-600">Batal</button>
+        </div>
+    </div>
+
+    <!-- MODAL KUIS INTERAKTIF -->
+    <div id="quiz-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl border-2 border-pink-100 max-w-md w-full p-6 shadow-xl space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 id="quiz-title" class="font-extrabold text-lg text-gray-800">Latihan Kuis</h3>
+                <button onclick="closeQuizModal()" class="text-gray-400 font-bold hover:text-gray-600">✕</button>
+            </div>
+            
+            <div id="quiz-questions-container" class="space-y-6">
+                <!-- Pertanyaan diinject di sini -->
+            </div>
+
+            <div id="quiz-result" class="hidden text-center p-4 bg-pink-50 rounded-2xl border border-pink-200">
+                <!-- Nilai diinject di sini -->
+            </div>
+
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="w-full bg-emerald-500 text-white font-extrabold py-3 rounded-2xl shadow hover:bg-emerald-600 bubbly-button">
+                Kirim Jawaban ✨
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO PRONUNCIATION ENGINE (SPEECH SYNTHESIS) -->
+    <script>
+        function speakWord(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.85; // Bicara sedikit santai agar mudah dipelajari
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Browser Anda belum mendukung audio pronunciation bawaan.');
+            }
+        }
+    </script>
+
+    <!-- CORE LOGIC & SUPABASE INTEGRATION -->
+    <script>
+        let currentUserId = null;
+        let currentUserRole = 'student';
+        let activeQuizId = null;
+        let activeQuestions = [];
+        let selectedAnswers = {};
+
+        // Inisialisasi Auth State
+        async function initAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            updateUI(session);
+
+            supabase.auth.onAuthStateChange((_event, session) => {
+                updateUI(session);
+            });
+        }
+
+        async function updateUI(session) {
+            const authContainer = document.getElementById('auth-status');
+            const statsBanner = document.getElementById('stats-banner');
+            const teacherPanel = document.getElementById('teacher-panel');
+
+            if (session) {
+                currentUserId = session.user.id;
+                // Ambil data profile
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUserId)
+                    .single();
+
+                if (profile) {
+                    currentUserRole = profile.role;
+                    document.getElementById('user-display-name').textContent = profile.full_name;
+                    document.getElementById('stat-xp').textContent = profile.xp || 0;
+                    document.getElementById('stat-stars').textContent = profile.stars || 0;
+                    document.getElementById('stat-streak').textContent = (profile.current_streak || 0) + ' Hari';
+
+                    if (profile.role === 'teacher') {
+                        teacherPanel.classList.remove('hidden');
+                    } else {
+                        teacherPanel.classList.add('hidden');
+                    }
+                }
+
+                statsBanner.classList.remove('hidden');
+                authContainer.innerHTML = `
+                    <button onclick="handleLogout()" class="text-xs font-bold text-gray-500 hover:text-pink-500 bg-gray-100 px-4 py-2 rounded-full">Keluar</button>
+                `;
+            } else {
+                currentUserId = null;
+                currentUserRole = 'student';
+                statsBanner.classList.add('hidden');
+                teacherPanel.classList.add('hidden');
+                authContainer.innerHTML = `
+                    <button onclick="toggleModal(true)" class="bg-pink-500 text-white text-xs font-extrabold px-5 py-2.5 rounded-full shadow hover:bg-pink-600 bubbly-button">Masuk Akun</button>
+                `;
+            }
+
+            loadLessons();
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('auth-modal');
+            modal.className = show ? "fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" : "hidden";
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert('Gagal login: ' + error.message);
+            } else {
+                toggleModal(false);
+            }
+        }
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+        }
+
+        // Memuat Materi Pembelajaran & Kosakata
+        async function loadLessons() {
+            const container = document.getElementById('lessons-list');
+            
+            // Ambil materi dari Supabase
+            const { data: lessons, error: lError } = await supabase
+                .from('lessons')
+                .select('*')
+                .order('order_index', { ascending: true });
+
+            if (lError || !lessons || lessons.length === 0) {
+                container.innerHTML = `<p class="text-gray-400">Belum ada modul yang tersedia.</p>`;
+                return;
+            }
+
+            let html = '';
+            for (const lesson of lessons) {
+                // Ambil kosakata untuk lesson ini
+                const { data: vocabs } = await supabase
+                    .from('vocabularies')
+                    .select('*')
+                    .eq('lesson_id', lesson.id);
+
+                // Ambil kuis terkait jika ada
+                const { data: quizzes } = await supabase
+                    .from('quizzes')
+                    .select('*')
+                    .eq('lesson_id', lesson.id)
+                    .limit(1);
+
+                const quiz = quizzes && quizzes[0] ? quizzes[0] : null;
+
+                html += `
+                    <div class="bg-white rounded-3xl border-2 border-pink-100 p-6 shadow-sm space-y-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-extrabold text-xl text-gray-800">${lesson.title}</h3>
+                                <p class="text-sm text-gray-500 font-medium mt-1">${lesson.description || ''}</p>
+                            </div>
+                            ${quiz ? `
+                                <button onclick="startQuiz('${quiz.id}', '${quiz.title}')" class="bg-yellow-400 text-yellow-900 font-extrabold text-xs px-4 py-2 rounded-2xl shadow hover:bg-yellow-300 bubbly-button flex items-center gap-1">
+                                    <span>⭐ Kuis Bab Ini</span>
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <!-- Daftar Kosakata -->
+                        <div class="border-t border-pink-50 pt-4">
+                            <h4 class="text-xs font-bold text-pink-400 uppercase tracking-wider mb-3">Kosakata & Pengucapan</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                ${(vocabs || []).map(v => `
+                                    <div class="flex items-center justify-between p-3 rounded-2xl bg-[#FFF9FA] border border-pink-100">
+                                        <div>
+                                            <p class="font-bold text-gray-800 text-sm">${v.indonesian}</p>
+                                            <p class="text-xs text-gray-400 italic font-medium">${v.pronunciation || ''} &bull; <span class="text-pink-500 not-italic">${v.english}</span></p>
+                                        </div>
+                                        <button onclick="speakWord('${v.indonesian}')" class="w-8 h-8 rounded-full bg-white shadow-sm border border-pink-200 flex items-center justify-center text-sm hover:bg-pink-50">
+                                            🔊
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // Logika Kuis Server-Side
+        async function startQuiz(quizId, quizTitle) {
+            if (!currentUserId) {
+                alert('Silakan masuk akun terlebih dahulu untuk mengerjakan kuis dan menyimpan poin!');
+                toggleModal(true);
+                return;
+            }
+
+            activeQuizId = quizId;
+            selectedAnswers = {};
+            document.getElementById('quiz-title').textContent = quizTitle;
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-submit-btn').classList.remove('hidden');
+
+            // Ambil pertanyaan dari database
+            const { data: questions, error } = await supabase
+                .from('quiz_questions')
+                .select('id, question_text, question_type, options')
+                .eq('quiz_id', quizId)
+                .order('order_index');
+
+            if (error || !questions || questions.length === 0) {
+                alert('Pertanyaan kuis belum tersedia.');
+                return;
+            }
+
+            activeQuestions = questions;
+            renderQuizQuestions();
+            document.getElementById('quiz-modal').className = "fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50";
+        }
+
+        function renderQuizQuestions() {
+            const container = document.getElementById('quiz-questions-container');
+            container.innerHTML = activeQuestions.map((q, qIndex) => `
+                <div class="space-y-3">
+                    <p class="font-bold text-sm text-gray-800">${qIndex + 1}. ${q.question_text}</p>
+                    <div class="grid grid-cols-1 gap-2">
+                        ${q.options.map((opt) => `
+                            <button onclick="selectOption('${q.id}', '${opt}')" id="btn-${q.id}-${opt.replace(/\s+/g, '')}" class="quiz-opt-btn text-left p-3 text-xs font-semibold rounded-xl border border-gray-200 hover:border-pink-300">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectOption(questionId, option) {
+            selectedAnswers[questionId] = option;
+            const buttons = document.querySelectorAll(`[id^="btn-${questionId}-"]`);
+            buttons.forEach(b => {
+                b.classList.remove('bg-pink-100', 'border-pink-500', 'text-pink-700');
+            });
+            const selectedBtn = document.getElementById(`btn-${questionId}-${option.replace(/\s+/g, '')}`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('bg-pink-100', 'border-pink-500', 'text-pink-700');
+            }
+        }
+
+        async function submitQuiz() {
+            if (Object.keys(selectedAnswers).length < activeQuestions.length) {
+                alert('Harap jawab semua pertanyaan terlebih dahulu!');
+                return;
+            }
+
+            // Panggil RPC database yang kita buat sebelumnya untuk validasi nilai yang aman
+            const { data, error } = await supabase.rpc('submit_quiz_attempt', {
+                p_quiz_id: activeQuizId,
+                p_answers: selectedAnswers
+            });
+
+            if (error) {
+                alert('Terjadi kesalahan saat memeriksa jawaban: ' + error.message);
+                return;
+            }
+
+            document.getElementById('quiz-submit-btn').classList.add('hidden');
+            const resultBox = document.getElementById('quiz-result');
+            resultBox.classList.remove('hidden');
+            resultBox.innerHTML = `
+                <h4 class="font-black text-lg text-gray-800 ${data.passed ? 'text-emerald-600' : 'text-orange-500'}">
+                    ${data.passed ? 'Luar Biasa! 🎉' : 'Ayo Coba Lagi! 💪'}
+                </h4>
+                <p class="text-sm font-bold text-gray-600 mt-1">Skor Anda: ${data.score}% (${data.correct_answers}/${data.total_questions})</p>
+                ${data.passed ? `<p class="text-xs text-pink-600 font-extrabold mt-2">+${data.earned_xp} XP &bull; +${data.earned_stars} Stars</p>` : ''}
+            `;
+
+            // Refresh status poin user di banner
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUserId).single();
+            if (profile) {
+                document.getElementById('stat-xp').textContent = profile.xp;
+                document.getElementById('stat-stars').textContent = profile.stars;
+            }
+        }
+
+        function closeQuizModal() {
+            document.getElementById('quiz-modal').className = "hidden";
+        }
+
+        // Jalankan saat halaman dibuka
+        initAuth();
+    </script>
 </body>
 </html>
