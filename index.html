@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IndoLearn - Master Indonesian Easily</title>
+  <title>IndoLearn with Shelyna 🌸</title>
   <style>
     :root {
-      --bg: #fff5f8;
+      --bg: #fff0f5;
       --card-bg: #ffffff;
-      --primary: #f43f5e;
-      --primary-hover: #e11d48;
+      --primary: #fb7185;
+      --primary-hover: #f43f5e;
       --primary-light: #ffe4e6;
       --accent: #f59e0b;
-      --text-main: #1f2937;
+      --text-main: #374151;
       --text-muted: #6b7280;
-      --border: #fecdd3;
-      --shadow: 0 4px 14px rgba(244, 63, 94, 0.08);
-      --radius: 16px;
+      --border: #fbcfe8;
+      --shadow: 0 8px 20px rgba(251, 113, 133, 0.12);
+      --radius: 20px;
     }
 
     * {
@@ -53,14 +53,25 @@
       border: 2px solid var(--border);
       border-radius: var(--radius);
       padding: 36px 32px;
-      max-width: 420px;
+      max-width: 440px;
       width: 100%;
-      box-shadow: 0 10px 25px rgba(244, 63, 94, 0.12);
+      box-shadow: var(--shadow);
       text-align: center;
     }
 
+    .cute-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-hover);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
     .auth-card h2 {
-      font-size: 1.6rem;
+      font-size: 1.65rem;
       font-weight: 800;
       color: var(--text-main);
       margin-bottom: 6px;
@@ -75,17 +86,17 @@
     .role-switcher {
       display: flex;
       background: #fdf2f8;
-      border-radius: 12px;
-      padding: 4px;
+      border-radius: 14px;
+      padding: 5px;
       margin-bottom: 20px;
-      gap: 4px;
+      gap: 6px;
     }
 
     .role-btn {
       flex: 1;
       border: none;
       padding: 10px;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: 700;
       font-size: 0.9rem;
       cursor: pointer;
@@ -96,8 +107,8 @@
 
     .role-btn.active {
       background: var(--card-bg);
-      color: var(--primary);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      color: var(--primary-hover);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
     }
 
     .form-group {
@@ -116,8 +127,8 @@
 
     .form-group input {
       width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 11px 14px;
+      border-radius: 10px;
       border: 1.5px solid var(--border);
       font-size: 0.95rem;
       outline: none;
@@ -133,7 +144,7 @@
       color: white;
       border: none;
       padding: 12px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
@@ -174,8 +185,8 @@
     }
 
     .profile-info p {
-      color: var(--primary);
-      font-weight: 500;
+      color: var(--primary-hover);
+      font-weight: 600;
       margin-top: 4px;
       font-size: 0.95rem;
     }
@@ -192,7 +203,7 @@
     }
 
     .btn-logout:hover {
-      color: var(--primary);
+      color: var(--primary-hover);
     }
 
     .stats-group {
@@ -203,7 +214,7 @@
     .stat-badge {
       background: #fafafa;
       border: 1px solid #f3f4f6;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 10px 16px;
       display: flex;
       align-items: center;
@@ -251,7 +262,7 @@
 
     .audio-tip {
       background: #fdf2f8;
-      color: var(--primary);
+      color: var(--primary-hover);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.8rem;
@@ -360,7 +371,7 @@
     .vocab-card:hover {
       border-color: var(--primary);
       transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(244, 63, 94, 0.12);
+      box-shadow: 0 6px 16px rgba(251, 113, 133, 0.15);
     }
 
     .vocab-word {
@@ -380,7 +391,7 @@
     .vocab-meaning {
       font-size: 0.82rem;
       font-weight: 600;
-      color: var(--primary);
+      color: var(--primary-hover);
       margin-left: 6px;
     }
 
@@ -408,37 +419,38 @@
 </head>
 <body>
 
-  <!-- Layar Login Awal -->
+  <!-- Layar Login Awal Imut -->
   <div id="auth-screen" class="auth-overlay">
     <div class="auth-card">
-      <h2>Welcome to IndoLearn ✨</h2>
-      <p>Choose your role to get started</p>
+      <div class="cute-badge">✨ Shelyna's Learning Space 🌸</div>
+      <h2>Learn Indonesian with Shelyna! 🎀</h2>
+      <p>Pick your role to begin your cute language journey ~</p>
 
       <div class="role-switcher">
-        <button id="tab-student" class="role-btn active" onclick="switchRole('student')">👨‍🎓 Student</button>
-        <button id="tab-teacher" class="role-btn" onclick="switchRole('teacher')">👩‍🏫 Teacher</button>
+        <button id="tab-student" class="role-btn active" onclick="switchRole('student')">🌸 Student</button>
+        <button id="tab-teacher" class="role-btn" onclick="switchRole('teacher')">👑 Teacher</button>
       </div>
 
       <!-- Form Student (Cukup Username) -->
       <div id="student-form">
         <div class="form-group">
-          <label for="student-name">Your Name / Username</label>
-          <input type="text" id="student-name" placeholder="e.g. Alex" />
+          <label for="student-name">Your Nickname</label>
+          <input type="text" id="student-name" placeholder="Enter your name (e.g. Alex) ✨" />
         </div>
-        <button class="btn-submit" onclick="loginStudent()">Start Learning</button>
+        <button class="btn-submit" onclick="loginStudent()">Join Shelyna's Class 🚀</button>
       </div>
 
       <!-- Form Teacher (Email & Password) -->
       <div id="teacher-form" style="display: none;">
         <div class="form-group">
           <label for="teacher-email">Teacher Email</label>
-          <input type="email" id="teacher-email" placeholder="teacher@indolearn.com" />
+          <input type="email" id="teacher-email" placeholder="teacher@gmail.com" />
         </div>
         <div class="form-group">
           <label for="teacher-password">Password</label>
-          <input type="password" id="teacher-password" placeholder="Enter password (default: admin123)" />
+          <input type="password" id="teacher-password" placeholder="Password (default: admin123)" />
         </div>
-        <button class="btn-submit" onclick="loginTeacher()">Log In as Teacher</button>
+        <button class="btn-submit" onclick="loginTeacher()">Log In as Teacher 👑</button>
       </div>
 
       <p id="error-box" class="error-msg"></p>
@@ -450,8 +462,8 @@
     <header class="profile-card">
       <div class="profile-info">
         <h1 id="welcome-title">Welcome! ✨</h1>
-        <p id="role-tag">Ready to practice Indonesian today?</p>
-        <button class="btn-logout" onclick="logout()">Log out / Switch account</button>
+        <p id="role-tag">Learning Indonesian with Shelyna 🌸</p>
+        <button class="btn-logout" onclick="logout()">Switch student / Log out</button>
       </div>
 
       <div class="stats-group">
@@ -481,7 +493,7 @@
 
     <div class="section-header">
       <div class="section-title">
-        <span>📚</span> Curriculum & Lessons
+        <span>📖</span> Lessons by Shelyna
       </div>
       <div class="audio-tip">
         Click 🔊 for natural audio
@@ -512,7 +524,7 @@
     let activeRole = 'student';
     let xp = 0;
 
-    // Password Guru Sementara (Bisa kamu ubah sendiri disini)
+    // Password Guru (Default)
     const TEACHER_DEFAULT_PASS = "admin123";
 
     const vocabulary = [
@@ -563,7 +575,7 @@
       const errorBox = document.getElementById("error-box");
 
       if (!name) {
-        errorBox.innerText = "Please enter your name.";
+        errorBox.innerText = "Please enter your nickname ✨";
         errorBox.style.display = "block";
         return;
       }
@@ -590,9 +602,8 @@
         return;
       }
 
-      const teacherName = email.split("@")[0];
       localStorage.setItem("userRole", "teacher");
-      localStorage.setItem("userName", teacherName);
+      localStorage.setItem("userName", "Shelyna");
       launchApp();
     }
 
@@ -613,11 +624,11 @@
       const roleTag = document.getElementById("role-tag");
 
       if (role === 'teacher') {
-        welcomeTitle.innerText = `Welcome, Teacher ${name}! 👩‍🏫`;
-        roleTag.innerText = "Teacher Dashboard • Class management ready";
+        welcomeTitle.innerText = `Welcome, Teacher Shelyna! 👑`;
+        roleTag.innerText = "Shelyna's Teacher Dashboard • Ready to guide";
       } else {
         welcomeTitle.innerText = `Welcome, ${name}! ✨`;
-        roleTag.innerText = "Ready to practice Indonesian today?";
+        roleTag.innerText = "Ready to practice Indonesian with Shelyna today? 🌸";
       }
 
       renderVocab();
@@ -673,10 +684,10 @@
     }
 
     function startQuiz() {
-      alert("Quiz mode will be available soon!");
+      alert("Quiz mode will be available soon! Practice words first to earn XP!");
     }
 
-    // Jalankan pengecekan login saat web dibuka
+    // Cek status sesi login saat web dibuka
     launchApp();
   </script>
 </body>
