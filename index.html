@@ -9,6 +9,7 @@
       --bg: #fff5f8;
       --card-bg: #ffffff;
       --primary: #f43f5e;
+      --primary-hover: #e11d48;
       --primary-light: #ffe4e6;
       --accent: #f59e0b;
       --text-main: #1f2937;
@@ -31,6 +32,7 @@
       padding: 24px;
       display: flex;
       justify-content: center;
+      min-height: 100vh;
     }
 
     .container {
@@ -43,7 +45,7 @@
       background: var(--card-bg);
       border: 2px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px 28px;
+      padding: 24px 28px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -63,6 +65,59 @@
       color: var(--primary);
       font-weight: 500;
       margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    .name-input-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .name-input-box input {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .name-input-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .name-input-box button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .name-input-box button:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-reset {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 8px;
+      padding: 0;
+      display: none;
+    }
+
+    .btn-reset:hover {
+      color: var(--primary);
     }
 
     .stats-group {
@@ -74,7 +129,7 @@
       background: #fafafa;
       border: 1px solid #f3f4f6;
       border-radius: 12px;
-      padding: 8px 16px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -98,7 +153,7 @@
     }
 
     .stat-value {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--text-main);
     }
@@ -115,8 +170,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 1.3rem;
-      font-weight: 700;
+      font-size: 1.25rem;
+      font-weight: 800;
     }
 
     .audio-tip {
@@ -147,7 +202,7 @@
     }
 
     .chapter-title {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 800;
       color: var(--text-main);
     }
@@ -156,7 +211,7 @@
       color: var(--text-muted);
       font-size: 0.95rem;
       margin-top: 6px;
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
     .btn-quiz {
@@ -282,9 +337,19 @@
     <!-- Profile & Gamification Stats -->
     <header class="profile-card">
       <div class="profile-info">
-        <h1>Welcome, Celine! ✨</h1>
+        <h1 id="welcome-title">Welcome! ✨</h1>
         <p>Ready to practice Indonesian today?</p>
+
+        <!-- Form Input Nama (Hanya tampil sebelum daftar) -->
+        <div id="name-form" class="name-input-box">
+          <input type="text" id="name-input" placeholder="Enter your name..." />
+          <button onclick="saveName()">Start Learning</button>
+        </div>
+
+        <!-- Tombol Reset / Ganti Murid -->
+        <button id="reset-btn" class="btn-reset" onclick="resetStudent()">Switch student / Log out</button>
       </div>
+
       <div class="stats-group">
         <div class="stat-badge">
           <span class="icon">⚡</span>
@@ -304,13 +369,13 @@
           <span class="icon">🔥</span>
           <div class="text-group">
             <span class="stat-label">STREAK</span>
-            <span class="stat-value">1 Day</span>
+            <span class="stat-value" id="streak-count">0 Days</span>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Main Section -->
+    <!-- Main Section Header -->
     <div class="section-header">
       <div class="section-title">
         <span>📚</span> Curriculum & Lessons
@@ -330,7 +395,7 @@
         <button class="btn-quiz" onclick="startQuiz()">⭐ Start Quiz</button>
       </div>
 
-      <!-- Categories Filter -->
+      <!-- Categories Filter Tabs -->
       <div class="filter-tabs">
         <button class="tab-btn active" onclick="filterCategory('all', this)">All Words</button>
         <button class="tab-btn" onclick="filterCategory('greetings', this)">Time & Greetings</button>
@@ -344,6 +409,7 @@
   </div>
 
   <script>
+    // Database Materi Kosakata
     const vocabulary = [
       { id: 1, word: "Selamat pagi", phonetic: "suh-lah-maht pah-ghee", meaning: "Good morning", category: "greetings" },
       { id: 2, word: "Selamat siang", phonetic: "suh-lah-maht see-ahng", meaning: "Good afternoon", category: "greetings" },
@@ -366,6 +432,52 @@
     let xp = 0;
     const container = document.getElementById("vocab-container");
 
+    // Sistem Status Murid (Guest vs Terdaftar)
+    function checkStudent() {
+      const savedName = localStorage.getItem("currentStudent");
+      const savedXP = localStorage.getItem("studentXP");
+
+      const title = document.getElementById("welcome-title");
+      const nameForm = document.getElementById("name-form");
+      const resetBtn = document.getElementById("reset-btn");
+      const streakText = document.getElementById("streak-count");
+      const xpText = document.getElementById("xp-count");
+
+      if (savedName) {
+        title.innerText = `Welcome, ${savedName}! ✨`;
+        nameForm.style.display = "none";
+        resetBtn.style.display = "inline-block";
+        streakText.innerText = "1 Day";
+        xp = savedXP ? parseInt(savedXP) : 0;
+        xpText.innerText = xp;
+      } else {
+        title.innerText = "Welcome! ✨";
+        nameForm.style.display = "flex";
+        resetBtn.style.display = "none";
+        streakText.innerText = "0 Days";
+        xp = 0;
+        xpText.innerText = "0";
+      }
+    }
+
+    function saveName() {
+      const input = document.getElementById("name-input");
+      const name = input.value.trim();
+
+      if (name !== "") {
+        localStorage.setItem("currentStudent", name);
+        input.value = "";
+        checkStudent();
+      }
+    }
+
+    function resetStudent() {
+      localStorage.removeItem("currentStudent");
+      localStorage.removeItem("studentXP");
+      checkStudent();
+    }
+
+    // Tampilkan Kartu Kata
     function renderVocab(filter = "all") {
       container.innerHTML = "";
       const filtered = filter === "all" ? vocabulary : vocabulary.filter(item => item.category === filter);
@@ -387,6 +499,7 @@
       });
     }
 
+    // Fitur Suara (Web Speech API) + Tambah XP
     function playSound(text) {
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
@@ -397,9 +510,13 @@
 
         xp += 5;
         document.getElementById("xp-count").innerText = xp;
+        if (localStorage.getItem("currentStudent")) {
+          localStorage.setItem("studentXP", xp);
+        }
       }
     }
 
+    // Tab Filter
     function filterCategory(cat, btn) {
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
@@ -407,9 +524,11 @@
     }
 
     function startQuiz() {
-      alert("Quiz mode will be available soon! Practice words first to earn XP!");
+      alert("Great job practicing! Quiz mode will unlock after listening to all words!");
     }
 
+    // Inisialisasi awal
+    checkStudent();
     renderVocab();
   </script>
 </body>
