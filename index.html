@@ -1,451 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bahasa with Shelyna 🌷 - Indonesian Learning Academy</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client v2 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .bubbly-button {
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-        }
-        .bubbly-button:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body class="bg-[#FFF8F9] text-gray-800 min-h-screen flex flex-col">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IndoLearn - Master Indonesian Easily</title>
+  <style>
+    :root {
+      --bg: #fff5f8;
+      --card-bg: #ffffff;
+      --primary: #f43f5e;
+      --primary-light: #ffe4e6;
+      --accent: #f59e0b;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border: #fecdd3;
+      --shadow: 0 4px 14px rgba(244, 63, 94, 0.08);
+      --radius: 16px;
+    }
 
-    <!-- HEADER / NAVIGATION -->
-    <header class="bg-white border-b-2 border-pink-100 sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-5xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <span class="text-3xl">🌷</span>
-                <span class="font-extrabold text-xl text-pink-500 tracking-tight">Bahasa with Shelyna</span>
-            </div>
-            
-            <div id="nav-actions" class="flex items-center space-x-3">
-                <!-- Injected via JS -->
-            </div>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* Header Profile Card */
+    .profile-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .profile-info h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .profile-info p {
+      color: var(--primary);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .stats-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .stat-badge {
+      background: #fafafa;
+      border: 1px solid #f3f4f6;
+      border-radius: 12px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .stat-badge .icon {
+      font-size: 1.4rem;
+    }
+
+    .stat-badge .text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .audio-tip {
+      background: #fdf2f8;
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+    }
+
+    /* Chapter Main Card */
+    .chapter-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .chapter-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .chapter-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .chapter-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .btn-quiz {
+      background: #fbbf24;
+      color: #78350f;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-quiz:hover {
+      background: #f59e0b;
+      transform: translateY(-2px);
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Grid Vocab */
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .vocab-card {
+      background: #fff;
+      border: 1.5px solid #f3f4f6;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .vocab-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(244, 63, 94, 0.12);
+    }
+
+    .vocab-word {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .vocab-phonetic {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    .vocab-meaning {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-left: 6px;
+    }
+
+    .speaker-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .speaker-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Profile & Gamification Stats -->
+    <header class="profile-card">
+      <div class="profile-info">
+        <h1>Welcome, Celine! ✨</h1>
+        <p>Ready to practice Indonesian today?</p>
+      </div>
+      <div class="stats-group">
+        <div class="stat-badge">
+          <span class="icon">⚡</span>
+          <div class="text-group">
+            <span class="stat-label">XP</span>
+            <span class="stat-value" id="xp-count">0</span>
+          </div>
         </div>
+        <div class="stat-badge">
+          <span class="icon">⭐</span>
+          <div class="text-group">
+            <span class="stat-label">STARS</span>
+            <span class="stat-value" id="star-count">0</span>
+          </div>
+        </div>
+        <div class="stat-badge">
+          <span class="icon">🔥</span>
+          <div class="text-group">
+            <span class="stat-label">STREAK</span>
+            <span class="stat-value">1 Day</span>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="max-w-5xl mx-auto flex-1 w-full p-6 space-y-8">
+    <!-- Main Section -->
+    <div class="section-header">
+      <div class="section-title">
+        <span>📚</span> Curriculum & Lessons
+      </div>
+      <div class="audio-tip">
+        Click 🔊 for natural audio
+      </div>
+    </div>
 
-        <!-- STUDENT GAMIFICATION BANNER -->
-        <section id="stats-banner" class="bg-pink-100 border-2 border-pink-200 rounded-3xl p-6 shadow-sm">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Welcome, <span id="user-display-name">Learner</span>! ✨</h1>
-                    <p class="text-pink-600 font-semibold text-sm">Ready to practice Indonesian today?</p>
-                </div>
-                <div class="flex space-x-3">
-                    <div class="bg-white px-4 py-2 rounded-2xl border-2 border-pink-200 flex items-center space-x-2 shadow-sm">
-                        <span class="text-xl">⚡</span>
-                        <div>
-                            <p class="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">XP</p>
-                            <p id="stat-xp" class="text-base font-extrabold text-gray-700">0</p>
-                        </div>
-                    </div>
-                    <div class="bg-white px-4 py-2 rounded-2xl border-2 border-yellow-200 flex items-center space-x-2 shadow-sm">
-                        <span class="text-xl">⭐</span>
-                        <div>
-                            <p class="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">Stars</p>
-                            <p id="stat-stars" class="text-base font-extrabold text-gray-700">0</p>
-                        </div>
-                    </div>
-                    <div class="bg-white px-4 py-2 rounded-2xl border-2 border-orange-200 flex items-center space-x-2 shadow-sm">
-                        <span class="text-xl">🔥</span>
-                        <div>
-                            <p class="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">Streak</p>
-                            <p id="stat-streak" class="text-base font-extrabold text-gray-700">0 Days</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- Chapter Container -->
+    <main class="chapter-card">
+      <div class="chapter-top">
+        <div>
+          <h2 class="chapter-title">Chapter 1: Greetings & Introductions 🌸</h2>
+          <p class="chapter-desc">Learn how to greet others, introduce yourself, and show courtesy in daily Indonesian.</p>
+        </div>
+        <button class="btn-quiz" onclick="startQuiz()">⭐ Start Quiz</button>
+      </div>
 
-        <!-- TEACHER DASHBOARD (PRIVATE TO SHELYNA) -->
-        <section id="teacher-panel" class="hidden bg-purple-50 border-2 border-purple-200 rounded-3xl p-6 space-y-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="bg-purple-200 text-purple-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Private Access</span>
-                    <h2 class="text-xl font-bold text-purple-900 mt-2">Shelyna's Teacher Dashboard 👩‍🏫</h2>
-                </div>
-                <span class="bg-purple-600 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow">Teacher Mode Active</span>
-            </div>
-            <p class="text-sm text-purple-700">You are logged in as Teacher. You can review submissions, verify answer keys, and manage curriculum content.</p>
-        </section>
+      <!-- Categories Filter -->
+      <div class="filter-tabs">
+        <button class="tab-btn active" onclick="filterCategory('all', this)">All Words</button>
+        <button class="tab-btn" onclick="filterCategory('greetings', this)">Time & Greetings</button>
+        <button class="tab-btn" onclick="filterCategory('intro', this)">Introductions</button>
+        <button class="tab-btn" onclick="filterCategory('courtesy', this)">Courtesies</button>
+      </div>
 
-        <!-- LESSON MODULES & VOCABULARY -->
-        <section class="space-y-6">
-            <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
-                    <span>📚</span> Curriculum & Lessons
-                </h2>
-                <span class="text-xs font-bold text-pink-400 bg-pink-50 px-3 py-1 rounded-full border border-pink-100">Click 🔊 for natural audio</span>
-            </div>
-
-            <div id="lessons-list" class="space-y-6">
-                <p class="text-gray-400 font-medium">Loading lessons...</p>
-            </div>
-        </section>
-
+      <!-- Vocab Grid -->
+      <div class="vocab-grid" id="vocab-container"></div>
     </main>
+  </div>
 
-    <!-- MODAL: ENTER STUDENT NAME (NO PASSWORD REQUIRED) -->
-    <div id="student-name-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl border-2 border-pink-100 max-w-sm w-full p-6 shadow-xl space-y-4 text-center">
-            <div class="text-4xl">🌷</div>
-            <h3 class="text-xl font-extrabold text-gray-800">Welcome to Class!</h3>
-            <p class="text-xs text-gray-500 font-medium">Enter your name to track your Indonesian learning progress, quiz scores, and streak!</p>
-            <div class="space-y-3">
-                <input id="student-name-input" type="text" placeholder="Your name (e.g. Alex)" class="w-full px-4 py-3 rounded-2xl border-2 border-gray-100 focus:outline-none focus:border-pink-300 font-semibold text-center text-sm">
-                <button onclick="saveStudentName()" class="w-full bg-pink-500 text-white font-extrabold py-3 rounded-2xl shadow hover:bg-pink-600 bubbly-button">
-                    Start Learning! ✨
-                </button>
-            </div>
-        </div>
-    </div>
+  <script>
+    const vocabulary = [
+      { id: 1, word: "Selamat pagi", phonetic: "suh-lah-maht pah-ghee", meaning: "Good morning", category: "greetings" },
+      { id: 2, word: "Selamat siang", phonetic: "suh-lah-maht see-ahng", meaning: "Good afternoon", category: "greetings" },
+      { id: 3, word: "Selamat sore", phonetic: "suh-lah-maht soh-reh", meaning: "Good late afternoon", category: "greetings" },
+      { id: 4, word: "Selamat malam", phonetic: "suh-lah-maht mah-lahm", meaning: "Good evening", category: "greetings" },
+      { id: 5, word: "Apa kabar?", phonetic: "ah-pah kah-bahr", meaning: "How are you?", category: "greetings" },
+      { id: 6, word: "Kabar baik", phonetic: "kah-bahr bah-eek", meaning: "I'm doing well", category: "greetings" },
+      
+      { id: 7, word: "Nama saya...", phonetic: "nah-mah sah-yah", meaning: "My name is...", category: "intro" },
+      { id: 8, word: "Senang bertemu denganmu", phonetic: "suh-nahng buhr-tuh-moo", meaning: "Nice to meet you", category: "intro" },
+      { id: 9, word: "Saya berasal dari...", phonetic: "sah-yah buhr-ah-sahl", meaning: "I come from...", category: "intro" },
+      { id: 10, word: "Sampai jumpa!", phonetic: "sahm-pahy joom-pah", meaning: "See you later!", category: "intro" },
 
-    <!-- MODAL: TEACHER LOGIN (PRIVATE) -->
-    <div id="teacher-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl border-2 border-purple-100 max-w-sm w-full p-6 shadow-xl space-y-4">
-            <h3 class="text-xl font-bold text-gray-800 text-center">Teacher Login 👩‍🏫</h3>
-            <div class="space-y-3">
-                <input id="teacher-email" type="email" placeholder="Email" class="w-full px-4 py-3 rounded-2xl border-2 border-gray-100 focus:outline-none focus:border-purple-300 font-medium text-sm">
-                <input id="teacher-password" type="password" placeholder="Password" class="w-full px-4 py-3 rounded-2xl border-2 border-gray-100 focus:outline-none focus:border-purple-300 font-medium text-sm">
-                <button onclick="handleTeacherLogin()" class="w-full bg-purple-600 text-white font-extrabold py-3 rounded-2xl shadow hover:bg-purple-700 bubbly-button">
-                    Sign In
-                </button>
-            </div>
-            <button onclick="toggleTeacherModal(false)" class="w-full text-center text-xs font-bold text-gray-400 hover:text-gray-600">Cancel</button>
-        </div>
-    </div>
+      { id: 11, word: "Terima kasih", phonetic: "teh-ree-mah kah-seeh", meaning: "Thank you", category: "courtesy" },
+      { id: 12, word: "Sama-sama", phonetic: "sah-mah sah-mah", meaning: "You are welcome", category: "courtesy" },
+      { id: 13, word: "Permisi", phonetic: "puhr-mee-see", meaning: "Excuse me", category: "courtesy" },
+      { id: 14, word: "Maaf", phonetic: "mah-ahf", meaning: "Sorry / Pardon", category: "courtesy" }
+    ];
 
-    <!-- MODAL: INTERACTIVE QUIZ -->
-    <div id="quiz-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl border-2 border-pink-100 max-w-md w-full p-6 shadow-xl space-y-6 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-pink-500 bg-pink-50 px-2 py-0.5 rounded-md">Practice Quiz</span>
-                    <h3 id="quiz-title" class="font-extrabold text-lg text-gray-800 mt-1">Lesson Quiz</h3>
-                </div>
-                <button onclick="closeQuizModal()" class="text-gray-400 font-bold hover:text-gray-600 text-lg">✕</button>
-            </div>
-            
-            <div id="quiz-questions-container" class="space-y-6"></div>
+    let xp = 0;
+    const container = document.getElementById("vocab-container");
 
-            <div id="quiz-result" class="hidden text-center p-5 bg-pink-50 rounded-2xl border border-pink-200"></div>
+    function renderVocab(filter = "all") {
+      container.innerHTML = "";
+      const filtered = filter === "all" ? vocabulary : vocabulary.filter(item => item.category === filter);
 
-            <button id="quiz-submit-btn" onclick="submitQuiz()" class="w-full bg-emerald-500 text-white font-extrabold py-3 rounded-2xl shadow hover:bg-emerald-600 bubbly-button">
-                Submit Answers ✨
-            </button>
-        </div>
-    </div>
+      filtered.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "vocab-card";
+        card.innerHTML = `
+          <div>
+            <span class="vocab-word">${item.word}</span>
+            <span class="vocab-phonetic">${item.phonetic}</span>
+            <span class="vocab-meaning">• ${item.meaning}</span>
+          </div>
+          <button class="speaker-btn" title="Listen">🔊</button>
+        `;
 
-    <!-- MAIN JAVASCRIPT & SUPABASE INTEGRATION -->
-    <script>
-        const SUPABASE_URL = "https://iblljzbveloonfumuarw.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_lcyCSzCFXr87S2_7pXLRTQ_M9LFh7mo";
-        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        card.addEventListener("click", () => playSound(item.word));
+        container.appendChild(card);
+      });
+    }
 
-        let currentStudentId = localStorage.getItem('bws_student_id');
-        let currentStudentName = localStorage.getItem('bws_student_name');
-        let isTeacher = false;
+    function playSound(text) {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "id-ID";
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
 
-        let activeQuizId = null;
-        let activeQuestions = [];
-        let selectedAnswers = {};
+        xp += 5;
+        document.getElementById("xp-count").innerText = xp;
+      }
+    }
 
-        // Speech Synthesis for Indonesian Words
-        function speakWord(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.85;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert('Audio pronunciation is not supported by your current browser.');
-            }
-        }
+    function filterCategory(cat, btn) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderVocab(cat);
+    }
 
-        async function initApp() {
-            // Check teacher session
-            const { data: { session } } = await client.auth.getSession();
-            if (session) {
-                const { data: profile } = await client.from('profiles').select('*').eq('id', session.user.id).single();
-                if (profile && profile.role === 'teacher') {
-                    isTeacher = true;
-                    document.getElementById('teacher-panel').classList.remove('hidden');
-                    document.getElementById('user-display-name').textContent = "Shelyna 🌷";
-                }
-            }
+    function startQuiz() {
+      alert("Quiz mode will be available soon! Practice words first to earn XP!");
+    }
 
-            // Student onboarding (only when not teacher)
-            if (!isTeacher) {
-                if (!currentStudentId || !currentStudentName) {
-                    toggleStudentNameModal(true);
-                } else {
-                    loadStudentProfile();
-                }
-            }
-
-            renderNav();
-            loadLessons();
-        }
-
-        async function loadStudentProfile() {
-            document.getElementById('user-display-name').textContent = currentStudentName;
-            const { data: profile } = await client.from('profiles').select('*').eq('id', currentStudentId).single();
-            if (profile) {
-                document.getElementById('stat-xp').textContent = profile.xp || 0;
-                document.getElementById('stat-stars').textContent = profile.stars || 0;
-                document.getElementById('stat-streak').textContent = (profile.current_streak || 0) + ' Days';
-            }
-        }
-
-        function renderNav() {
-            const nav = document.getElementById('nav-actions');
-            if (isTeacher) {
-                nav.innerHTML = `
-                    <span class="text-xs font-bold bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full">Teacher Shelyna</span>
-                    <button onclick="handleTeacherLogout()" class="text-xs font-bold text-gray-500 hover:text-pink-500 bg-gray-100 px-3 py-1.5 rounded-full transition">Sign Out</button>
-                `;
-            } else {
-                nav.innerHTML = `
-                    ${currentStudentName ? `
-                        <button onclick="toggleStudentNameModal(true)" class="text-xs font-bold bg-pink-100 text-pink-600 px-3 py-1.5 rounded-full hover:bg-pink-200 transition">
-                            👤 ${currentStudentName} (Switch)
-                        </button>
-                    ` : ''}
-                    <button onclick="toggleTeacherModal(true)" class="text-xs font-bold text-gray-400 hover:text-gray-600 px-2 py-1 transition">
-                        Teacher Sign In
-                    </button>
-                `;
-            }
-        }
-
-        function toggleStudentNameModal(show) {
-            const modal = document.getElementById('student-name-modal');
-            modal.className = show ? "fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" : "hidden";
-        }
-
-        function toggleTeacherModal(show) {
-            const modal = document.getElementById('teacher-modal');
-            modal.className = show ? "fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" : "hidden";
-        }
-
-        async function saveStudentName() {
-            const nameInput = document.getElementById('student-name-input').value.trim();
-            if (!nameInput) {
-                alert('Please enter your name to proceed!');
-                return;
-            }
-
-            if (!currentStudentId) {
-                currentStudentId = crypto.randomUUID();
-                localStorage.setItem('bws_student_id', currentStudentId);
-            }
-
-            currentStudentName = nameInput;
-            localStorage.setItem('bws_student_name', currentStudentName);
-
-            // Upsert student profile in database
-            await client.from('profiles').upsert({
-                id: currentStudentId,
-                full_name: currentStudentName,
-                role: 'student'
-            });
-
-            toggleStudentNameModal(false);
-            renderNav();
-            loadStudentProfile();
-        }
-
-        async function handleTeacherLogin() {
-            const email = document.getElementById('teacher-email').value;
-            const password = document.getElementById('teacher-password').value;
-            const { error } = await client.auth.signInWithPassword({ email, password });
-            if (error) {
-                alert('Sign in failed: ' + error.message);
-            } else {
-                window.location.reload();
-            }
-        }
-
-        async function handleTeacherLogout() {
-            await client.auth.signOut();
-            window.location.reload();
-        }
-
-        async function loadLessons() {
-            const container = document.getElementById('lessons-list');
-            
-            const { data: lessons, error: lError } = await client
-                .from('lessons')
-                .select('*')
-                .order('order_index', { ascending: true });
-
-            if (lError || !lessons || lessons.length === 0) {
-                container.innerHTML = `<p class="text-gray-400 font-medium">No lessons published yet.</p>`;
-                return;
-            }
-
-            let html = '';
-            for (const lesson of lessons) {
-                const { data: vocabs } = await client
-                    .from('vocabularies')
-                    .select('*')
-                    .eq('lesson_id', lesson.id);
-
-                const { data: quizzes } = await client
-                    .from('quizzes')
-                    .select('*')
-                    .eq('lesson_id', lesson.id)
-                    .limit(1);
-
-                const quiz = quizzes && quizzes[0] ? quizzes[0] : null;
-
-                html += `
-                    <div class="bg-white rounded-3xl border-2 border-pink-100 p-6 shadow-sm space-y-4">
-                        <div class="flex items-start justify-between flex-wrap gap-3">
-                            <div>
-                                <h3 class="font-extrabold text-xl text-gray-800">${lesson.title}</h3>
-                                <p class="text-sm text-gray-500 font-medium mt-1">${lesson.description || ''}</p>
-                            </div>
-                            ${quiz ? `
-                                <button onclick="startQuiz('${quiz.id}', '${quiz.title}')" class="bg-yellow-400 text-yellow-900 font-extrabold text-xs px-4 py-2 rounded-2xl shadow hover:bg-yellow-300 bubbly-button flex items-center gap-1.5">
-                                    <span>⭐ Start Quiz</span>
-                                </button>
-                            ` : ''}
-                        </div>
-
-                        <div class="border-t border-pink-50 pt-4">
-                            <h4 class="text-xs font-bold text-pink-400 uppercase tracking-wider mb-3">Vocabulary & Pronunciation</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                ${(vocabs || []).map(v => `
-                                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#FFF9FA] border border-pink-100">
-                                        <div>
-                                            <p class="font-bold text-gray-800 text-sm">${v.indonesian}</p>
-                                            <p class="text-xs text-gray-400 italic font-medium">${v.pronunciation || ''} &bull; <span class="text-pink-500 not-italic font-semibold">${v.english}</span></p>
-                                        </div>
-                                        <button onclick="speakWord('${v.indonesian}')" class="w-9 h-9 rounded-full bg-white shadow-sm border border-pink-200 flex items-center justify-center text-base hover:bg-pink-50 transition active:scale-95" title="Listen pronunciation">
-                                            🔊
-                                        </button>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            container.innerHTML = html;
-        }
-
-        async function startQuiz(quizId, quizTitle) {
-            if (!currentStudentId && !isTeacher) {
-                toggleStudentNameModal(true);
-                return;
-            }
-
-            activeQuizId = quizId;
-            selectedAnswers = {};
-            document.getElementById('quiz-title').textContent = quizTitle;
-            document.getElementById('quiz-result').classList.add('hidden');
-            document.getElementById('quiz-submit-btn').classList.remove('hidden');
-
-            const { data: questions, error } = await client
-                .from('quiz_questions')
-                .select('id, question_text, question_type, options')
-                .eq('quiz_id', quizId)
-                .order('order_index');
-
-            if (error || !questions || questions.length === 0) {
-                alert('No quiz questions found.');
-                return;
-            }
-
-            activeQuestions = questions;
-            renderQuizQuestions();
-            document.getElementById('quiz-modal').className = "fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50";
-        }
-
-        function renderQuizQuestions() {
-            const container = document.getElementById('quiz-questions-container');
-            container.innerHTML = activeQuestions.map((q, qIndex) => `
-                <div class="space-y-3">
-                    <p class="font-bold text-sm text-gray-800">${qIndex + 1}. ${q.question_text}</p>
-                    <div class="grid grid-cols-1 gap-2">
-                        ${q.options.map((opt) => `
-                            <button onclick="selectOption('${q.id}', '${opt}')" id="btn-${q.id}-${opt.replace(/[^a-zA-Z0-9]/g, '')}" class="quiz-opt-btn text-left p-3 text-xs font-semibold rounded-xl border border-gray-200 hover:border-pink-300 transition">
-                                ${opt}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function selectOption(questionId, option) {
-            selectedAnswers[questionId] = option;
-            const buttons = document.querySelectorAll(`[id^="btn-${questionId}-"]`);
-            buttons.forEach(b => {
-                b.classList.remove('bg-pink-100', 'border-pink-500', 'text-pink-700');
-            });
-            const sanitized = option.replace(/[^a-zA-Z0-9]/g, '');
-            const selectedBtn = document.getElementById(`btn-${questionId}-${sanitized}`);
-            if (selectedBtn) {
-                selectedBtn.classList.add('bg-pink-100', 'border-pink-500', 'text-pink-700');
-            }
-        }
-
-        async function submitQuiz() {
-            if (Object.keys(selectedAnswers).length < activeQuestions.length) {
-                alert('Please answer all questions before submitting!');
-                return;
-            }
-
-            const targetStudentId = currentStudentId;
-            const { data, error } = await client.rpc('submit_quiz_attempt_guest', {
-                p_quiz_id: activeQuizId,
-                p_student_id: targetStudentId,
-                p_answers: selectedAnswers
-            });
-
-            if (error) {
-                alert('Submission error: ' + error.message);
-                return;
-            }
-
-            document.getElementById('quiz-submit-btn').classList.add('hidden');
-            const resultBox = document.getElementById('quiz-result');
-            resultBox.classList.remove('hidden');
-            resultBox.innerHTML = `
-                <h4 class="font-black text-lg ${data.passed ? 'text-emerald-600' : 'text-orange-500'}">
-                    ${data.passed ? 'Great Job! 🎉' : 'Keep Practicing! 💪'}
-                </h4>
-                <p class="text-sm font-bold text-gray-600 mt-1">Your Score: ${data.score}% (${data.correct_answers}/${data.total_questions})</p>
-                ${data.passed ? `<p class="text-xs text-pink-600 font-extrabold mt-2">+${data.earned_xp} XP &bull; +${data.earned_stars} Stars Earned!</p>` : ''}
-            `;
-
-            if (currentStudentId) {
-                loadStudentProfile();
-            }
-        }
-
-        function closeQuizModal() {
-            document.getElementById('quiz-modal').className = "hidden";
-        }
-
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
+    renderVocab();
+  </script>
 </body>
 </html>
