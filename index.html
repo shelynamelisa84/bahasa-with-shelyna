@@ -6,7 +6,7 @@
     <title>Bahasa with Shelyna 🌷</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
+    <!-- Supabase JS Client v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -22,13 +22,6 @@
 </head>
 <body class="bg-[#FFF8F9] text-gray-800 min-h-screen flex flex-col">
 
-    <!-- KONFIGURASI SUPABASE -->
-    <script>
-        const SUPABASE_URL = "https://iblljzbveloonfumuarw.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_lcyCSzCFXr87S2_7pXLRTQ_M9LFh7mo";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    </script>
-
     <!-- HEADER / NAVIGATION -->
     <header class="bg-white border-b-2 border-pink-100 sticky top-0 z-50 px-6 py-4">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
@@ -38,7 +31,7 @@
             </div>
             
             <div id="auth-status" class="flex items-center space-x-4">
-                <!-- Status User / Tombol Login diinject via JS -->
+                <button onclick="toggleModal(true)" class="bg-pink-500 text-white text-xs font-extrabold px-5 py-2.5 rounded-full shadow hover:bg-pink-600 bubbly-button">Masuk Akun</button>
             </div>
         </div>
     </header>
@@ -86,21 +79,18 @@
                     <span class="bg-purple-200 text-purple-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Private Access</span>
                     <h2 class="text-xl font-bold text-purple-900 mt-2">Shelyna's Teacher Dashboard 👩‍🏫</h2>
                 </div>
-                <button onclick="alert('Fitur tambah materi langsung akan aktif pada sub-modul berikutnya!')" class="bg-purple-600 text-white font-bold px-4 py-2 rounded-2xl shadow hover:bg-purple-700">
-                    + Tambah Modul Baru
-                </button>
+                <span class="bg-purple-600 text-white font-bold text-xs px-3 py-1.5 rounded-xl shadow">Mode Guru Aktif</span>
             </div>
-            <p class="text-sm text-purple-700">Anda masuk sebagai Teacher. Anda dapat melihat kunci jawaban, mengelola kuis, dan memeriksa submission tugas.</p>
+            <p class="text-sm text-purple-700">Anda masuk sebagai Teacher. Anda dapat melihat kuis, skor siswa, dan mengelola materi.</p>
         </section>
 
-        <!-- LESSONS & VOCABULARY ACCORDION -->
+        <!-- LESSONS & VOCABULARY LIST -->
         <section class="space-y-6">
             <h2 class="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
                 <span>📚</span> Daftar Pembelajaran
             </h2>
 
             <div id="lessons-list" class="space-y-6">
-                <!-- Data modul dari database dimuat di sini -->
                 <p class="text-gray-400 font-medium">Memuat materi pembelajaran...</p>
             </div>
         </section>
@@ -130,13 +120,9 @@
                 <button onclick="closeQuizModal()" class="text-gray-400 font-bold hover:text-gray-600">✕</button>
             </div>
             
-            <div id="quiz-questions-container" class="space-y-6">
-                <!-- Pertanyaan diinject di sini -->
-            </div>
+            <div id="quiz-questions-container" class="space-y-6"></div>
 
-            <div id="quiz-result" class="hidden text-center p-4 bg-pink-50 rounded-2xl border border-pink-200">
-                <!-- Nilai diinject di sini -->
-            </div>
+            <div id="quiz-result" class="hidden text-center p-4 bg-pink-50 rounded-2xl border border-pink-200"></div>
 
             <button id="quiz-submit-btn" onclick="submitQuiz()" class="w-full bg-emerald-500 text-white font-extrabold py-3 rounded-2xl shadow hover:bg-emerald-600 bubbly-button">
                 Kirim Jawaban ✨
@@ -144,8 +130,20 @@
         </div>
     </div>
 
-    <!-- AUDIO PRONUNCIATION ENGINE (SPEECH SYNTHESIS) -->
+    <!-- SCRIPT UTAMA -->
     <script>
+        // Inisialisasi Supabase Client dengan nama variabel unik agar tidak bentrok
+        const SUPABASE_URL = "https://iblljzbveloonfumuarw.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_lcyCSzCFXr87S2_7pXLRTQ_M9LFh7mo";
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUserId = null;
+        let currentUserRole = 'student';
+        let activeQuizId = null;
+        let activeQuestions = [];
+        let selectedAnswers = {};
+
+        // Pronunciation Voice
         function speakWord(text) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(text);
@@ -156,23 +154,20 @@
                 alert('Browser Anda belum mendukung audio pronunciation bawaan.');
             }
         }
-    </script>
 
-    <!-- CORE LOGIC & SUPABASE INTEGRATION -->
-    <script>
-        let currentUserId = null;
-        let currentUserRole = 'student';
-        let activeQuizId = null;
-        let activeQuestions = [];
-        let selectedAnswers = {};
-
+        // Auth Logic
         async function initAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            updateUI(session);
-
-            supabase.auth.onAuthStateChange((_event, session) => {
+            try {
+                const { data: { session } } = await client.auth.getSession();
                 updateUI(session);
-            });
+
+                client.auth.onAuthStateChange((_event, session) => {
+                    updateUI(session);
+                });
+            } catch (err) {
+                console.error("Auth error:", err);
+            }
+            loadLessons();
         }
 
         async function updateUI(session) {
@@ -182,7 +177,7 @@
 
             if (session) {
                 currentUserId = session.user.id;
-                const { data: profile } = await supabase
+                const { data: profile } = await client
                     .from('profiles')
                     .select('*')
                     .eq('id', currentUserId)
@@ -215,8 +210,6 @@
                     <button onclick="toggleModal(true)" class="bg-pink-500 text-white text-xs font-extrabold px-5 py-2.5 rounded-full shadow hover:bg-pink-600 bubbly-button">Masuk Akun</button>
                 `;
             }
-
-            loadLessons();
         }
 
         function toggleModal(show) {
@@ -227,7 +220,7 @@
         async function handleLogin() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            const { error } = await client.auth.signInWithPassword({ email, password });
             if (error) {
                 alert('Gagal login: ' + error.message);
             } else {
@@ -236,13 +229,14 @@
         }
 
         async function handleLogout() {
-            await supabase.auth.signOut();
+            await client.auth.signOut();
         }
 
+        // Load Lessons from Database
         async function loadLessons() {
             const container = document.getElementById('lessons-list');
             
-            const { data: lessons, error: lError } = await supabase
+            const { data: lessons, error: lError } = await client
                 .from('lessons')
                 .select('*')
                 .order('order_index', { ascending: true });
@@ -254,12 +248,12 @@
 
             let html = '';
             for (const lesson of lessons) {
-                const { data: vocabs } = await supabase
+                const { data: vocabs } = await client
                     .from('vocabularies')
                     .select('*')
                     .eq('lesson_id', lesson.id);
 
-                const { data: quizzes } = await supabase
+                const { data: quizzes } = await client
                     .from('quizzes')
                     .select('*')
                     .eq('lesson_id', lesson.id)
@@ -303,6 +297,7 @@
             container.innerHTML = html;
         }
 
+        // Quiz Logic (Server-side RPC)
         async function startQuiz(quizId, quizTitle) {
             if (!currentUserId) {
                 alert('Silakan masuk akun terlebih dahulu untuk mengerjakan kuis dan menyimpan poin!');
@@ -316,7 +311,7 @@
             document.getElementById('quiz-result').classList.add('hidden');
             document.getElementById('quiz-submit-btn').classList.remove('hidden');
 
-            const { data: questions, error } = await supabase
+            const { data: questions, error } = await client
                 .from('quiz_questions')
                 .select('id, question_text, question_type, options')
                 .eq('quiz_id', quizId)
@@ -366,7 +361,7 @@
                 return;
             }
 
-            const { data, error } = await supabase.rpc('submit_quiz_attempt', {
+            const { data, error } = await client.rpc('submit_quiz_attempt', {
                 p_quiz_id: activeQuizId,
                 p_answers: selectedAnswers
             });
@@ -387,7 +382,7 @@
                 ${data.passed ? `<p class="text-xs text-pink-600 font-extrabold mt-2">+${data.earned_xp} XP &bull; +${data.earned_stars} Stars</p>` : ''}
             `;
 
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUserId).single();
+            const { data: profile } = await client.from('profiles').select('*').eq('id', currentUserId).single();
             if (profile) {
                 document.getElementById('stat-xp').textContent = profile.xp;
                 document.getElementById('stat-stars').textContent = profile.stars;
@@ -398,7 +393,8 @@
             document.getElementById('quiz-modal').className = "hidden";
         }
 
-        initAuth();
+        // Jalankan saat file selesai dimuat
+        document.addEventListener('DOMContentLoaded', initAuth);
     </script>
 </body>
 </html>
