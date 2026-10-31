@@ -40,7 +40,119 @@
       max-width: 900px;
     }
 
-    /* Header Profile Card */
+    /* Auth Screen (Login) */
+    .auth-overlay {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(244, 63, 94, 0.12);
+      text-align: center;
+    }
+
+    .auth-card h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .auth-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    .role-switcher {
+      display: flex;
+      background: #fdf2f8;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+      gap: 4px;
+    }
+
+    .role-btn {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .role-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .error-msg {
+      color: #e11d48;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* Main Dashboard Header */
     .profile-card {
       background: var(--card-bg);
       border: 2px solid var(--border);
@@ -68,43 +180,7 @@
       font-size: 0.95rem;
     }
 
-    .name-input-box {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      align-items: center;
-    }
-
-    .name-input-box input {
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .name-input-box input:focus {
-      border-color: var(--primary);
-    }
-
-    .name-input-box button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.2s;
-    }
-
-    .name-input-box button:hover {
-      background: var(--primary-hover);
-    }
-
-    .btn-reset {
+    .btn-logout {
       background: none;
       border: none;
       color: var(--text-muted);
@@ -113,10 +189,9 @@
       text-decoration: underline;
       margin-top: 8px;
       padding: 0;
-      display: none;
     }
 
-    .btn-reset:hover {
+    .btn-logout:hover {
       color: var(--primary);
     }
 
@@ -333,21 +408,50 @@
 </head>
 <body>
 
-  <div class="container">
-    <!-- Profile & Gamification Stats -->
+  <!-- Layar Login Awal -->
+  <div id="auth-screen" class="auth-overlay">
+    <div class="auth-card">
+      <h2>Welcome to IndoLearn ✨</h2>
+      <p>Choose your role to get started</p>
+
+      <div class="role-switcher">
+        <button id="tab-student" class="role-btn active" onclick="switchRole('student')">👨‍🎓 Student</button>
+        <button id="tab-teacher" class="role-btn" onclick="switchRole('teacher')">👩‍🏫 Teacher</button>
+      </div>
+
+      <!-- Form Student (Cukup Username) -->
+      <div id="student-form">
+        <div class="form-group">
+          <label for="student-name">Your Name / Username</label>
+          <input type="text" id="student-name" placeholder="e.g. Alex" />
+        </div>
+        <button class="btn-submit" onclick="loginStudent()">Start Learning</button>
+      </div>
+
+      <!-- Form Teacher (Email & Password) -->
+      <div id="teacher-form" style="display: none;">
+        <div class="form-group">
+          <label for="teacher-email">Teacher Email</label>
+          <input type="email" id="teacher-email" placeholder="teacher@indolearn.com" />
+        </div>
+        <div class="form-group">
+          <label for="teacher-password">Password</label>
+          <input type="password" id="teacher-password" placeholder="Enter password (default: admin123)" />
+        </div>
+        <button class="btn-submit" onclick="loginTeacher()">Log In as Teacher</button>
+      </div>
+
+      <p id="error-box" class="error-msg"></p>
+    </div>
+  </div>
+
+  <!-- Dashboard Utama Pembelajaran -->
+  <div id="main-app" class="container" style="display: none;">
     <header class="profile-card">
       <div class="profile-info">
         <h1 id="welcome-title">Welcome! ✨</h1>
-        <p>Ready to practice Indonesian today?</p>
-
-        <!-- Form Input Nama (Hanya tampil sebelum daftar) -->
-        <div id="name-form" class="name-input-box">
-          <input type="text" id="name-input" placeholder="Enter your name..." />
-          <button onclick="saveName()">Start Learning</button>
-        </div>
-
-        <!-- Tombol Reset / Ganti Murid -->
-        <button id="reset-btn" class="btn-reset" onclick="resetStudent()">Switch student / Log out</button>
+        <p id="role-tag">Ready to practice Indonesian today?</p>
+        <button class="btn-logout" onclick="logout()">Log out / Switch account</button>
       </div>
 
       <div class="stats-group">
@@ -369,13 +473,12 @@
           <span class="icon">🔥</span>
           <div class="text-group">
             <span class="stat-label">STREAK</span>
-            <span class="stat-value" id="streak-count">0 Days</span>
+            <span class="stat-value" id="streak-count">1 Day</span>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Main Section Header -->
     <div class="section-header">
       <div class="section-title">
         <span>📚</span> Curriculum & Lessons
@@ -385,7 +488,6 @@
       </div>
     </div>
 
-    <!-- Chapter Container -->
     <main class="chapter-card">
       <div class="chapter-top">
         <div>
@@ -395,7 +497,6 @@
         <button class="btn-quiz" onclick="startQuiz()">⭐ Start Quiz</button>
       </div>
 
-      <!-- Categories Filter Tabs -->
       <div class="filter-tabs">
         <button class="tab-btn active" onclick="filterCategory('all', this)">All Words</button>
         <button class="tab-btn" onclick="filterCategory('greetings', this)">Time & Greetings</button>
@@ -403,13 +504,17 @@
         <button class="tab-btn" onclick="filterCategory('courtesy', this)">Courtesies</button>
       </div>
 
-      <!-- Vocab Grid -->
       <div class="vocab-grid" id="vocab-container"></div>
     </main>
   </div>
 
   <script>
-    // Database Materi Kosakata
+    let activeRole = 'student';
+    let xp = 0;
+
+    // Password Guru Sementara (Bisa kamu ubah sendiri disini)
+    const TEACHER_DEFAULT_PASS = "admin123";
+
     const vocabulary = [
       { id: 1, word: "Selamat pagi", phonetic: "suh-lah-maht pah-ghee", meaning: "Good morning", category: "greetings" },
       { id: 2, word: "Selamat siang", phonetic: "suh-lah-maht see-ahng", meaning: "Good afternoon", category: "greetings" },
@@ -429,55 +534,104 @@
       { id: 14, word: "Maaf", phonetic: "mah-ahf", meaning: "Sorry / Pardon", category: "courtesy" }
     ];
 
-    let xp = 0;
     const container = document.getElementById("vocab-container");
 
-    // Sistem Status Murid (Guest vs Terdaftar)
-    function checkStudent() {
-      const savedName = localStorage.getItem("currentStudent");
-      const savedXP = localStorage.getItem("studentXP");
+    function switchRole(role) {
+      activeRole = role;
+      const studentTab = document.getElementById("tab-student");
+      const teacherTab = document.getElementById("tab-teacher");
+      const studentForm = document.getElementById("student-form");
+      const teacherForm = document.getElementById("teacher-form");
+      const errorBox = document.getElementById("error-box");
+      errorBox.style.display = "none";
 
-      const title = document.getElementById("welcome-title");
-      const nameForm = document.getElementById("name-form");
-      const resetBtn = document.getElementById("reset-btn");
-      const streakText = document.getElementById("streak-count");
-      const xpText = document.getElementById("xp-count");
-
-      if (savedName) {
-        title.innerText = `Welcome, ${savedName}! ✨`;
-        nameForm.style.display = "none";
-        resetBtn.style.display = "inline-block";
-        streakText.innerText = "1 Day";
-        xp = savedXP ? parseInt(savedXP) : 0;
-        xpText.innerText = xp;
+      if (role === 'student') {
+        studentTab.classList.add("active");
+        teacherTab.classList.remove("active");
+        studentForm.style.display = "block";
+        teacherForm.style.display = "none";
       } else {
-        title.innerText = "Welcome! ✨";
-        nameForm.style.display = "flex";
-        resetBtn.style.display = "none";
-        streakText.innerText = "0 Days";
-        xp = 0;
-        xpText.innerText = "0";
+        teacherTab.classList.add("active");
+        studentTab.classList.remove("active");
+        teacherForm.style.display = "block";
+        studentForm.style.display = "none";
       }
     }
 
-    function saveName() {
-      const input = document.getElementById("name-input");
-      const name = input.value.trim();
+    function loginStudent() {
+      const name = document.getElementById("student-name").value.trim();
+      const errorBox = document.getElementById("error-box");
 
-      if (name !== "") {
-        localStorage.setItem("currentStudent", name);
-        input.value = "";
-        checkStudent();
+      if (!name) {
+        errorBox.innerText = "Please enter your name.";
+        errorBox.style.display = "block";
+        return;
       }
+
+      localStorage.setItem("userRole", "student");
+      localStorage.setItem("userName", name);
+      launchApp();
     }
 
-    function resetStudent() {
-      localStorage.removeItem("currentStudent");
-      localStorage.removeItem("studentXP");
-      checkStudent();
+    function loginTeacher() {
+      const email = document.getElementById("teacher-email").value.trim();
+      const pass = document.getElementById("teacher-password").value.trim();
+      const errorBox = document.getElementById("error-box");
+
+      if (!email || !pass) {
+        errorBox.innerText = "Please enter email and password.";
+        errorBox.style.display = "block";
+        return;
+      }
+
+      if (pass !== TEACHER_DEFAULT_PASS) {
+        errorBox.innerText = "Incorrect password! (Default: admin123)";
+        errorBox.style.display = "block";
+        return;
+      }
+
+      const teacherName = email.split("@")[0];
+      localStorage.setItem("userRole", "teacher");
+      localStorage.setItem("userName", teacherName);
+      launchApp();
     }
 
-    // Tampilkan Kartu Kata
+    function launchApp() {
+      const role = localStorage.getItem("userRole");
+      const name = localStorage.getItem("userName");
+
+      if (!role || !name) {
+        document.getElementById("auth-screen").style.display = "flex";
+        document.getElementById("main-app").style.display = "none";
+        return;
+      }
+
+      document.getElementById("auth-screen").style.display = "none";
+      document.getElementById("main-app").style.display = "block";
+
+      const welcomeTitle = document.getElementById("welcome-title");
+      const roleTag = document.getElementById("role-tag");
+
+      if (role === 'teacher') {
+        welcomeTitle.innerText = `Welcome, Teacher ${name}! 👩‍🏫`;
+        roleTag.innerText = "Teacher Dashboard • Class management ready";
+      } else {
+        welcomeTitle.innerText = `Welcome, ${name}! ✨`;
+        roleTag.innerText = "Ready to practice Indonesian today?";
+      }
+
+      renderVocab();
+    }
+
+    function logout() {
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("userName");
+      document.getElementById("student-name").value = "";
+      document.getElementById("teacher-email").value = "";
+      document.getElementById("teacher-password").value = "";
+      launchApp();
+    }
+
     function renderVocab(filter = "all") {
       container.innerHTML = "";
       const filtered = filter === "all" ? vocabulary : vocabulary.filter(item => item.category === filter);
@@ -499,7 +653,6 @@
       });
     }
 
-    // Fitur Suara (Web Speech API) + Tambah XP
     function playSound(text) {
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
@@ -510,13 +663,9 @@
 
         xp += 5;
         document.getElementById("xp-count").innerText = xp;
-        if (localStorage.getItem("currentStudent")) {
-          localStorage.setItem("studentXP", xp);
-        }
       }
     }
 
-    // Tab Filter
     function filterCategory(cat, btn) {
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
@@ -524,12 +673,11 @@
     }
 
     function startQuiz() {
-      alert("Great job practicing! Quiz mode will unlock after listening to all words!");
+      alert("Quiz mode will be available soon!");
     }
 
-    // Inisialisasi awal
-    checkStudent();
-    renderVocab();
+    // Jalankan pengecekan login saat web dibuka
+    launchApp();
   </script>
 </body>
 </html>
