@@ -12,6 +12,9 @@
       --primary-hover: #f43f5e;
       --primary-light: #ffe4e6;
       --accent: #f59e0b;
+      --success: #10b981;
+      --success-light: #dcfce7;
+      --error: #ef4444;
       --text-main: #374151;
       --text-muted: #6b7280;
       --border: #fbcfe8;
@@ -40,7 +43,7 @@
       max-width: 900px;
     }
 
-    /* Auth Screen (Login) */
+    /* Auth Screen */
     .auth-overlay {
       display: flex;
       justify-content: center;
@@ -244,6 +247,50 @@
       color: var(--text-main);
     }
 
+    /* Session Navigation Tabs */
+    .session-switcher-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .session-switch-btn {
+      flex: 1;
+      padding: 14px 20px;
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      transition: all 0.2s;
+    }
+
+    .session-switch-btn.active {
+      border-color: var(--primary);
+      background: #fffafc;
+      color: var(--primary-hover);
+      box-shadow: var(--shadow);
+    }
+
+    /* Badge Completed di Dashboard Session */
+    .badge-completed {
+      background: var(--success-light);
+      color: #166534;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
     /* Section Header */
     .section-header {
       display: flex;
@@ -270,7 +317,7 @@
       border: 1px solid var(--border);
     }
 
-    /* Chapter Main Card */
+    /* Session Content Card */
     .chapter-card {
       background: var(--card-bg);
       border: 2px solid var(--border);
@@ -287,6 +334,19 @@
       margin-bottom: 20px;
     }
 
+    .chapter-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .chapter-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .chapter-title {
       font-size: 1.3rem;
       font-weight: 800;
@@ -296,15 +356,20 @@
     .chapter-desc {
       color: var(--text-muted);
       font-size: 0.95rem;
-      margin-top: 6px;
       line-height: 1.5;
+    }
+
+    .quiz-buttons-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .btn-quiz {
       background: #fbbf24;
       color: #78350f;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 18px;
       border-radius: 24px;
       font-weight: 700;
       font-size: 0.9rem;
@@ -321,32 +386,25 @@
       transform: translateY(-2px);
     }
 
-    /* Filter Tabs */
-    .filter-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid #f3f4f6;
-      padding-bottom: 12px;
-    }
-
-    .tab-btn {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 20px;
-      padding: 6px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
+    .btn-quiz-speaking {
+      background: #f43f5e;
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 24px;
+      font-weight: 700;
+      font-size: 0.9rem;
       cursor: pointer;
-      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
 
-    .tab-btn.active, .tab-btn:hover {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
+    .btn-quiz-speaking:hover {
+      background: #e11d48;
+      transform: translateY(-2px);
     }
 
     /* Grid Vocab */
@@ -354,6 +412,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 14px;
+      margin-top: 14px;
     }
 
     .vocab-card {
@@ -415,23 +474,212 @@
       border-color: var(--primary);
       transform: scale(1.1);
     }
+
+    /* Quiz Area */
+    .quiz-view {
+      display: none;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .btn-back-lessons {
+      background: #f3f4f6;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .quiz-prompt-card {
+      background: #fff0f5;
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-question-word {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .quiz-question-phonetic {
+      color: var(--primary-hover);
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .option-btn {
+      background: #ffffff;
+      border: 2px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: var(--success) !important;
+      color: #166534 !important;
+    }
+
+    .option-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: var(--error) !important;
+      color: #991b1b !important;
+    }
+
+    .mic-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(251, 113, 133, 0.4);
+      margin: 16px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .mic-button.listening {
+      background: var(--error);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .speech-feedback {
+      font-size: 1rem;
+      font-weight: 600;
+      min-height: 24px;
+      margin-top: 10px;
+    }
+
+    /* Result Card */
+    .quiz-result-card {
+      display: none;
+      padding: 24px 10px;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #fff0f5;
+      border: 4px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .score-circle .number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary-hover);
+    }
+
+    .score-circle .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .appreciation-card {
+      background: #fffafc;
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 24px;
+      margin: 18px auto 26px;
+      max-width: 580px;
+      box-shadow: 0 4px 12px rgba(251, 113, 133, 0.08);
+      position: relative;
+    }
+
+    .appreciation-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      color: var(--primary-hover);
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .appreciation-message {
+      font-size: 0.98rem;
+      color: var(--text-main);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .teacher-signature {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: block;
+      font-style: normal;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Layar Login Awal Imut -->
+  <!-- Layar Login -->
   <div id="auth-screen" class="auth-overlay">
     <div class="auth-card">
       <div class="cute-badge">✨ Shelyna's Learning Space 🌸</div>
       <h2>Learn Indonesian with Shelyna! 🎀</h2>
-      <p>Pick your role to begin your cute language journey ~</p>
+      <p>Pick your role to begin your language journey ~</p>
 
       <div class="role-switcher">
         <button id="tab-student" class="role-btn active" onclick="switchRole('student')">🌸 Student</button>
         <button id="tab-teacher" class="role-btn" onclick="switchRole('teacher')">👑 Teacher</button>
       </div>
 
-      <!-- Form Student (Cukup Username) -->
       <div id="student-form">
         <div class="form-group">
           <label for="student-name">Your Nickname</label>
@@ -440,7 +688,6 @@
         <button class="btn-submit" onclick="loginStudent()">Join Shelyna's Class 🚀</button>
       </div>
 
-      <!-- Form Teacher (Email & Password) -->
       <div id="teacher-form" style="display: none;">
         <div class="form-group">
           <label for="teacher-email">Teacher Email</label>
@@ -457,7 +704,7 @@
     </div>
   </div>
 
-  <!-- Dashboard Utama Pembelajaran -->
+  <!-- Dashboard Utama -->
   <div id="main-app" class="container" style="display: none;">
     <header class="profile-card">
       <div class="profile-info">
@@ -491,62 +738,157 @@
       </div>
     </header>
 
-    <div class="section-header">
-      <div class="section-title">
-        <span>📖</span> Lessons by Shelyna
+    <!-- Halaman Pelajaran -->
+    <div id="lessons-view">
+      
+      <!-- Session Switcher Tabs (Silabus) -->
+      <div class="session-switcher-container">
+        <button id="nav-session-1" class="session-switch-btn active" onclick="switchSession(1)">
+          <span>🌸 Session 1: Greetings</span>
+          <span id="tab-badge-s1" class="badge-completed">✓ Completed</span>
+        </button>
+        <button id="nav-session-2" class="session-switch-btn" onclick="switchSession(2)">
+          <span>☕ Session 2: Daily Survival</span>
+          <span id="tab-badge-s2" class="badge-completed">✓ Completed</span>
+        </button>
       </div>
-      <div class="audio-tip">
-        Click 🔊 for natural audio
+
+      <div class="section-header">
+        <div class="section-title">
+          <span>📖</span> <span id="current-session-label">Session 1 Material</span>
+        </div>
+        <div class="audio-tip">
+          Click 🔊 for natural audio
+        </div>
       </div>
+
+      <main class="chapter-card">
+        <div class="chapter-top">
+          <div class="chapter-title-group">
+            <div class="chapter-title-row">
+              <h2 class="chapter-title" id="session-display-title">Chapter 1: Greetings & Introductions 🌸</h2>
+              <span id="header-badge-status" class="badge-completed">✓ Completed</span>
+            </div>
+            <p class="chapter-desc" id="session-display-desc">Learn how to greet others, introduce yourself, and show courtesy in daily Indonesian.</p>
+          </div>
+          <div class="quiz-buttons-group">
+            <button class="btn-quiz" onclick="startQuiz('vocab')">⭐ Multiple Choice</button>
+            <button class="btn-quiz-speaking" onclick="startQuiz('speaking')">🎙️ Speaking Quiz</button>
+          </div>
+        </div>
+
+        <div class="vocab-grid" id="vocab-container"></div>
+      </main>
     </div>
 
-    <main class="chapter-card">
-      <div class="chapter-top">
-        <div>
-          <h2 class="chapter-title">Chapter 1: Greetings & Introductions 🌸</h2>
-          <p class="chapter-desc">Learn how to greet others, introduce yourself, and show courtesy in daily Indonesian.</p>
+    <!-- Halaman Kuis Interaktif & Speaking -->
+    <div id="quiz-view" class="quiz-view">
+      <div class="quiz-header">
+        <button class="btn-back-lessons" onclick="exitQuiz()">← Back to Lessons</button>
+        <span id="quiz-progress-text" style="font-weight: 700; color: var(--primary-hover);">Question 1 of 5</span>
+      </div>
+
+      <!-- Multiple Choice Area -->
+      <div id="quiz-mc-box" style="display: none;">
+        <div class="quiz-prompt-card">
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">What is the English meaning of:</p>
+          <div class="quiz-question-word" id="mc-word">Selamat pagi</div>
+          <div class="quiz-question-phonetic" id="mc-phonetic">suh-lah-maht pah-ghee</div>
+          <button class="speaker-btn" style="margin: 12px auto 0;" onclick="replayQuizAudio()">🔊</button>
         </div>
-        <button class="btn-quiz" onclick="startQuiz()">⭐ Start Quiz</button>
+        <div class="options-grid" id="quiz-options-container"></div>
       </div>
 
-      <div class="filter-tabs">
-        <button class="tab-btn active" onclick="filterCategory('all', this)">All Words</button>
-        <button class="tab-btn" onclick="filterCategory('greetings', this)">Time & Greetings</button>
-        <button class="tab-btn" onclick="filterCategory('intro', this)">Introductions</button>
-        <button class="tab-btn" onclick="filterCategory('courtesy', this)">Courtesies</button>
+      <!-- Speaking Quiz Area -->
+      <div id="quiz-speaking-box" style="display: none;">
+        <div class="quiz-prompt-card">
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">Pronounce this Indonesian phrase loudly & clearly:</p>
+          <div class="quiz-question-word" id="spk-word">Terima kasih</div>
+          <div class="quiz-question-phonetic" id="spk-phonetic">teh-ree-mah kah-seeh</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Meaning: <span id="spk-meaning" style="font-weight: 700; color: var(--primary);">Thank you</span></p>
+        </div>
+
+        <button id="mic-btn" class="mic-button" onclick="startVoiceRecognition()">🎙️</button>
+        <p id="speech-tip" style="font-size: 0.85rem; color: var(--text-muted);">Tap mic and speak in Indonesian</p>
+        <div id="speech-feedback" class="speech-feedback"></div>
       </div>
 
-      <div class="vocab-grid" id="vocab-container"></div>
-    </main>
+      <!-- Skor Langsung Keluar + Sweet Appreciation -->
+      <div id="quiz-result-box" class="quiz-result-card">
+        <div class="score-circle">
+          <span class="number" id="result-score-percent">100%</span>
+          <span class="label">Final Score</span>
+        </div>
+        
+        <p id="result-sub-score" style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 12px;">You scored 5 out of 5 questions correctly!</p>
+
+        <!-- Kotak Apresiasi Manis & Hangat dari Shelyna -->
+        <div class="appreciation-card">
+          <div class="appreciation-header">
+            <span>💌</span> <span id="appreciation-title">Sweet Note from Shelyna</span> <span>🌸</span>
+          </div>
+          <p class="appreciation-message" id="appreciation-text"></p>
+          <span class="teacher-signature">— With love & encouragement, Shelyna 💖</span>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button class="btn-quiz" onclick="restartCurrentQuiz()">🔄 Practice Again</button>
+          <button class="btn-back-lessons" style="padding: 10px 20px;" onclick="exitQuiz()">Back to Lessons</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
     let activeRole = 'student';
+    let currentSession = 1;
     let xp = 0;
-
-    // Password Guru (Default)
+    let stars = 0;
     const TEACHER_DEFAULT_PASS = "admin123";
 
-    const vocabulary = [
-      { id: 1, word: "Selamat pagi", phonetic: "suh-lah-maht pah-ghee", meaning: "Good morning", category: "greetings" },
-      { id: 2, word: "Selamat siang", phonetic: "suh-lah-maht see-ahng", meaning: "Good afternoon", category: "greetings" },
-      { id: 3, word: "Selamat sore", phonetic: "suh-lah-maht soh-reh", meaning: "Good late afternoon", category: "greetings" },
-      { id: 4, word: "Selamat malam", phonetic: "suh-lah-maht mah-lahm", meaning: "Good evening", category: "greetings" },
-      { id: 5, word: "Apa kabar?", phonetic: "ah-pah kah-bahr", meaning: "How are you?", category: "greetings" },
-      { id: 6, word: "Kabar baik", phonetic: "kah-bahr bah-eek", meaning: "I'm doing well", category: "greetings" },
-      
-      { id: 7, word: "Nama saya...", phonetic: "nah-mah sah-yah", meaning: "My name is...", category: "intro" },
-      { id: 8, word: "Senang bertemu denganmu", phonetic: "suh-nahng buhr-tuh-moo", meaning: "Nice to meet you", category: "intro" },
-      { id: 9, word: "Saya berasal dari...", phonetic: "sah-yah buhr-ah-sahl", meaning: "I come from...", category: "intro" },
-      { id: 10, word: "Sampai jumpa!", phonetic: "sahm-pahy joom-pah", meaning: "See you later!", category: "intro" },
+    // Data Materi Silabus Session 1 & Session 2
+    const sessionsData = {
+      1: {
+        title: "Session 1: Greetings & Introductions 🌸",
+        desc: "Learn how to greet others, introduce yourself, and show courtesy in daily Indonesian.",
+        vocab: [
+          { id: 1, word: "Selamat pagi", phonetic: "suh-lah-maht pah-ghee", meaning: "Good morning" },
+          { id: 2, word: "Selamat siang", phonetic: "suh-lah-maht see-ahng", meaning: "Good afternoon" },
+          { id: 3, word: "Selamat sore", phonetic: "suh-lah-maht soh-reh", meaning: "Good late afternoon" },
+          { id: 4, word: "Selamat malam", phonetic: "suh-lah-maht mah-lahm", meaning: "Good evening" },
+          { id: 5, word: "Apa kabar?", phonetic: "ah-pah kah-bahr", meaning: "How are you?" },
+          { id: 6, word: "Kabar baik", phonetic: "kah-bahr bah-eek", meaning: "I'm doing well" },
+          { id: 7, word: "Nama saya...", phonetic: "nah-mah sah-yah", meaning: "My name is..." },
+          { id: 8, word: "Senang bertemu denganmu", phonetic: "suh-nahng buhr-tuh-moo", meaning: "Nice to meet you" },
+          { id: 9, word: "Sampai jumpa!", phonetic: "sahm-pahy joom-pah", meaning: "See you later!" },
+          { id: 10, word: "Terima kasih", phonetic: "teh-ree-mah kah-seeh", meaning: "Thank you" },
+          { id: 11, word: "Sama-sama", phonetic: "sah-mah sah-mah", meaning: "You are welcome" },
+          { id: 12, word: "Maaf", phonetic: "mah-ahf", meaning: "Sorry / Pardon" }
+        ]
+      },
+      2: {
+        title: "Session 2: Daily Survival & Useful Expressions ☕",
+        desc: "Master essential phrases for ordering food, asking for help, directions, and shopping like a local.",
+        vocab: [
+          { id: 101, word: "Tolong", phonetic: "toh-long", meaning: "Please / Help" },
+          { id: 102, word: "Berapa harganya?", phonetic: "buh-rah-pah har-gah-nyah", meaning: "How much is this?" },
+          { id: 103, word: "Di mana toilet?", phonetic: "dee mah-nah toy-let", meaning: "Where is the restroom?" },
+          { id: 104, word: "Saya mau pesan ini", phonetic: "sah-yah mow puh-sahn ee-nee", meaning: "I would like to order this" },
+          { id: 105, word: "Enak sekali!", phonetic: "eh-nahk suh-kah-lee", meaning: "Very delicious!" },
+          { id: 106, word: "Bisa bahasa Inggris?", phonetic: "bee-sah bah-hah-sah eeng-grees", meaning: "Can you speak English?" },
+          { id: 107, word: "Tidak apa-apa", phonetic: "tee-dahk ah-pah ah-pah", meaning: "No problem / It's okay" },
+          { id: 108, word: "Saya tidak mengerti", phonetic: "sah-yah tee-dahk muhng-uhr-tee", meaning: "I don't understand" },
+          { id: 109, word: "Minta tolong", phonetic: "meen-tah toh-long", meaning: "Ask for assistance" },
+          { id: 110, word: "Boleh minta bon?", phonetic: "boh-leh meen-tah bohn", meaning: "Can I have the bill please?" }
+        ]
+      }
+    };
 
-      { id: 11, word: "Terima kasih", phonetic: "teh-ree-mah kah-seeh", meaning: "Thank you", category: "courtesy" },
-      { id: 12, word: "Sama-sama", phonetic: "sah-mah sah-mah", meaning: "You are welcome", category: "courtesy" },
-      { id: 13, word: "Permisi", phonetic: "puhr-mee-see", meaning: "Excuse me", category: "courtesy" },
-      { id: 14, word: "Maaf", phonetic: "mah-ahf", meaning: "Sorry / Pardon", category: "courtesy" }
-    ];
-
-    const container = document.getElementById("vocab-container");
+    let quizMode = 'vocab';
+    let quizQuestions = [];
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+    let recognition;
 
     function switchRole(role) {
       activeRole = role;
@@ -631,7 +973,8 @@
         roleTag.innerText = "Ready to practice Indonesian with Shelyna today? 🌸";
       }
 
-      renderVocab();
+      switchSession(1);
+      updateCompletionBadges();
     }
 
     function logout() {
@@ -640,14 +983,31 @@
       document.getElementById("student-name").value = "";
       document.getElementById("teacher-email").value = "";
       document.getElementById("teacher-password").value = "";
+      exitQuiz();
       launchApp();
     }
 
-    function renderVocab(filter = "all") {
-      container.innerHTML = "";
-      const filtered = filter === "all" ? vocabulary : vocabulary.filter(item => item.category === filter);
+    /* Switch Antar Session */
+    function switchSession(sessionNum) {
+      currentSession = sessionNum;
+      
+      document.getElementById("nav-session-1").classList.toggle("active", sessionNum === 1);
+      document.getElementById("nav-session-2").classList.toggle("active", sessionNum === 2);
 
-      filtered.forEach(item => {
+      const session = sessionsData[sessionNum];
+      document.getElementById("current-session-label").innerText = `Session ${sessionNum} Material`;
+      document.getElementById("session-display-title").innerText = session.title;
+      document.getElementById("session-display-desc").innerText = session.desc;
+
+      renderVocab(session.vocab);
+      updateCompletionBadges();
+    }
+
+    function renderVocab(vocabList) {
+      const container = document.getElementById("vocab-container");
+      container.innerHTML = "";
+
+      vocabList.forEach(item => {
         const card = document.createElement("div");
         card.className = "vocab-card";
         card.innerHTML = `
@@ -677,17 +1037,220 @@
       }
     }
 
-    function filterCategory(cat, btn) {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      renderVocab(cat);
+    /* Update Status Completed di Dashboard */
+    function updateCompletionBadges() {
+      const s1Completed = localStorage.getItem("completed_session_1") === "true";
+      const s2Completed = localStorage.getItem("completed_session_2") === "true";
+
+      document.getElementById("tab-badge-s1").style.display = s1Completed ? "inline-flex" : "none";
+      document.getElementById("tab-badge-s2").style.display = s2Completed ? "inline-flex" : "none";
+
+      const currentStatus = currentSession === 1 ? s1Completed : s2Completed;
+      document.getElementById("header-badge-status").style.display = currentStatus ? "inline-flex" : "none";
     }
 
-    function startQuiz() {
-      alert("Quiz mode will be available soon! Practice words first to earn XP!");
+    /* === QUIZ CONTROLLER === */
+    function startQuiz(mode) {
+      quizMode = mode;
+      document.getElementById("lessons-view").style.display = "none";
+      document.getElementById("quiz-view").style.display = "block";
+      document.getElementById("quiz-result-box").style.display = "none";
+
+      const currentVocab = sessionsData[currentSession].vocab;
+      const shuffled = [...currentVocab].sort(() => 0.5 - Math.random());
+      quizQuestions = shuffled.slice(0, 5);
+      currentQuizIndex = 0;
+      quizScore = 0;
+
+      if (mode === 'vocab') {
+        document.getElementById("quiz-mc-box").style.display = "block";
+        document.getElementById("quiz-speaking-box").style.display = "none";
+        showVocabQuestion();
+      } else {
+        document.getElementById("quiz-mc-box").style.display = "none";
+        document.getElementById("quiz-speaking-box").style.display = "block";
+        showSpeakingQuestion();
+      }
     }
 
-    // Cek status sesi login saat web dibuka
+    function restartCurrentQuiz() {
+      startQuiz(quizMode);
+    }
+
+    function showVocabQuestion() {
+      const current = quizQuestions[currentQuizIndex];
+      const allCurrentVocab = sessionsData[currentSession].vocab;
+
+      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Question ${currentQuizIndex + 1} of ${quizQuestions.length}`;
+      document.getElementById("mc-word").innerText = current.word;
+      document.getElementById("mc-phonetic").innerText = current.phonetic;
+
+      playSound(current.word);
+
+      const distractors = allCurrentVocab
+        .filter(item => item.meaning !== current.meaning)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map(item => item.meaning);
+
+      const options = [...distractors, current.meaning].sort(() => 0.5 - Math.random());
+      const optionsContainer = document.getElementById("quiz-options-container");
+      optionsContainer.innerHTML = "";
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = opt;
+        btn.onclick = () => selectVocabAnswer(btn, opt, current.meaning);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function replayQuizAudio() {
+      const current = quizQuestions[currentQuizIndex];
+      if (current) playSound(current.word);
+    }
+
+    function selectVocabAnswer(button, chosen, correct) {
+      const allButtons = document.querySelectorAll(".option-btn");
+      allButtons.forEach(btn => btn.disabled = true);
+
+      if (chosen === correct) {
+        button.classList.add("correct");
+        quizScore += 1;
+        xp += 15;
+        document.getElementById("xp-count").innerText = xp;
+      } else {
+        button.classList.add("wrong");
+        allButtons.forEach(btn => {
+          if (btn.innerText === correct) btn.classList.add("correct");
+        });
+      }
+
+      setTimeout(() => {
+        currentQuizIndex++;
+        if (currentQuizIndex < quizQuestions.length) {
+          showVocabQuestion();
+        } else {
+          showInstantResult();
+        }
+      }, 1200);
+    }
+
+    function showSpeakingQuestion() {
+      const current = quizQuestions[currentQuizIndex];
+      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Speaking ${currentQuizIndex + 1} of ${quizQuestions.length}`;
+      document.getElementById("spk-word").innerText = current.word;
+      document.getElementById("spk-phonetic").innerText = current.phonetic;
+      document.getElementById("spk-meaning").innerText = current.meaning;
+
+      const feedback = document.getElementById("speech-feedback");
+      feedback.innerText = "";
+      feedback.style.color = "var(--text-main)";
+      document.getElementById("speech-tip").innerText = "Tap mic and speak in Indonesian";
+    }
+
+    function startVoiceRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        alert("Your browser doesn't support microphone recognition. Please use Google Chrome or Microsoft Edge!");
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "id-ID";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      const micBtn = document.getElementById("mic-btn");
+      const tip = document.getElementById("speech-tip");
+      const feedback = document.getElementById("speech-feedback");
+
+      micBtn.classList.add("listening");
+      tip.innerText = "Listening... Speak now!";
+
+      recognition.onresult = function(event) {
+        micBtn.classList.remove("listening");
+        const spokenText = event.results[0][0].transcript.toLowerCase().trim();
+        const targetWord = quizQuestions[currentQuizIndex].word.toLowerCase().replace(/[\.\?!]/g, "").trim();
+
+        if (spokenText.includes(targetWord) || targetWord.includes(spokenText)) {
+          feedback.innerHTML = `✅ Great pronunciation! You said: <i>"${spokenText}"</i>`;
+          feedback.style.color = "var(--success)";
+          quizScore += 1;
+          xp += 20;
+          document.getElementById("xp-count").innerText = xp;
+        } else {
+          feedback.innerHTML = `❌ Heard: <i>"${spokenText}"</i> (Keep practicing!)`;
+          feedback.style.color = "var(--error)";
+        }
+
+        setTimeout(() => {
+          currentQuizIndex++;
+          if (currentQuizIndex < quizQuestions.length) {
+            showSpeakingQuestion();
+          } else {
+            showInstantResult();
+          }
+        }, 1600);
+      };
+
+      recognition.onerror = function() {
+        micBtn.classList.remove("listening");
+        tip.innerText = "Could not hear you clearly. Please tap and try again!";
+      };
+
+      recognition.start();
+    }
+
+    /* === RESULT & AUTO COMPLETE === */
+    function showInstantResult() {
+      document.getElementById("quiz-mc-box").style.display = "none";
+      document.getElementById("quiz-speaking-box").style.display = "none";
+      document.getElementById("quiz-result-box").style.display = "block";
+
+      const total = quizQuestions.length;
+      const percentage = Math.round((quizScore / total) * 100);
+      const studentName = localStorage.getItem("userName") || "Learner";
+
+      // Tandai Session ini sebagai COMPLETED otomatis
+      localStorage.setItem(`completed_session_${currentSession}`, "true");
+      updateCompletionBadges();
+
+      document.getElementById("result-score-percent").innerText = `${percentage}%`;
+      document.getElementById("result-sub-score").innerText = `Session ${currentSession} Quiz: You answered ${quizScore} out of ${total} correctly!`;
+
+      const appTitle = document.getElementById("appreciation-title");
+      const appText = document.getElementById("appreciation-text");
+
+      if (percentage === 100) {
+        stars += 2;
+        appTitle.innerText = "Pure Perfection! You're Shining ✨";
+        appText.innerHTML = `“Oh wow, ${studentName}! A perfect 100% on Session ${currentSession}! Shelyna is so unbelievably proud of you! You're picking up Indonesian with such elegance and ease ~”`;
+      } else if (percentage >= 80) {
+        stars += 2;
+        appTitle.innerText = "Wonderfully Done, My Star! 🌸";
+        appText.innerHTML = `“Incredible job on Session ${currentSession}, ${studentName}! Just tiny little steps left until total perfection, but your heart and focus truly shine through today!”`;
+      } else if (percentage >= 60) {
+        stars += 1;
+        appTitle.innerText = "Such Sweet Progress! 🎀";
+        appText.innerHTML = `“You’re doing so well, ${studentName}! Learning a whole new language is such a brave and pretty adventure. Every single word you practice counts!”`;
+      } else {
+        stars += 1;
+        appTitle.innerText = "A Hug for Your Beautiful Effort 💕";
+        appText.innerHTML = `“Don’t worry even for a second, ${studentName}! What matters most is that you tried today, and that makes you wonderful. Let’s review Session ${currentSession} together gently!”`;
+      }
+
+      document.getElementById("star-count").innerText = stars;
+    }
+
+    function exitQuiz() {
+      document.getElementById("quiz-view").style.display = "none";
+      document.getElementById("lessons-view").style.display = "block";
+      updateCompletionBadges();
+    }
+
     launchApp();
   </script>
 </body>
