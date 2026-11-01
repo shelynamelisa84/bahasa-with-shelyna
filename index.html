@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>IndoLearn with Shelyna 🌸</title>
   <style>
     :root {
@@ -27,6 +27,7 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-touch-callout: none;
     }
 
     body {
@@ -559,38 +560,49 @@
       color: #991b1b !important;
     }
 
+    /* PRESS AND HOLD MIC STYLING */
+    .mic-container {
+      margin: 18px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .mic-button {
-      width: 80px;
-      height: 80px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       background: var(--primary);
       color: white;
       border: none;
-      font-size: 2rem;
+      font-size: 2.2rem;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(251, 113, 133, 0.4);
-      margin: 16px auto;
+      box-shadow: 0 6px 18px rgba(251, 113, 133, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s, background 0.2s;
+      transition: all 0.2s ease;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    .mic-button.listening {
-      background: var(--error);
-      animation: pulse 1.2s infinite;
+    .mic-button.holding {
+      background: #ef4444;
+      transform: scale(1.15);
+      box-shadow: 0 0 0 16px rgba(239, 68, 68, 0.25);
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      70% { transform: scale(1.1); box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    .speech-instruction {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 12px;
     }
 
     .speech-feedback {
       font-size: 1rem;
       font-weight: 600;
-      min-height: 24px;
+      min-height: 28px;
       margin-top: 10px;
     }
 
@@ -739,8 +751,6 @@
 
     <!-- Halaman Pelajaran -->
     <div id="lessons-view">
-      
-      <!-- Session Switcher Tabs (Silabus) -->
       <div class="session-switcher-container">
         <button id="nav-session-1" class="session-switch-btn active" onclick="switchSession(1)">
           <span>🌸 Session 1: Greetings</span>
@@ -798,7 +808,7 @@
         <div class="options-grid" id="quiz-options-container"></div>
       </div>
 
-      <!-- Speaking Quiz Area -->
+      <!-- Speaking Quiz Area (PRESS AND HOLD) -->
       <div id="quiz-speaking-box" style="display: none;">
         <div class="quiz-prompt-card">
           <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">Pronounce this Indonesian phrase loudly & clearly:</p>
@@ -807,9 +817,11 @@
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Meaning: <span id="spk-meaning" style="font-weight: 700; color: var(--primary);">Thank you</span></p>
         </div>
 
-        <button id="mic-btn" class="mic-button" onclick="startVoiceRecognition()">🎙️</button>
-        <p id="speech-tip" style="font-size: 0.85rem; color: var(--text-muted);">Tap mic and speak in Indonesian</p>
-        <div id="speech-feedback" class="speech-feedback"></div>
+        <div class="mic-container">
+          <button id="mic-btn" class="mic-button">🎙️</button>
+          <p id="speech-tip" class="speech-instruction">Press & Hold to Speak</p>
+          <div id="speech-feedback" class="speech-feedback"></div>
+        </div>
       </div>
 
       <!-- Skor Langsung Keluar + Sweet Appreciation -->
@@ -821,7 +833,6 @@
         
         <p id="result-sub-score" style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 12px;">You scored 5 out of 5 questions correctly!</p>
 
-        <!-- Kotak Apresiasi Manis & Hangat dari Shelyna -->
         <div class="appreciation-card">
           <div class="appreciation-header">
             <span>💌</span> <span id="appreciation-title">Sweet Note from Shelyna</span> <span>🌸</span>
@@ -845,7 +856,6 @@
     let stars = 0;
     const TEACHER_DEFAULT_PASS = "admin123";
 
-    // Data Materi Silabus Session 1 & Session 2
     const sessionsData = {
       1: {
         title: "Session 1: Greetings & Introductions 🌸",
@@ -887,7 +897,11 @@
     let quizQuestions = [];
     let currentQuizIndex = 0;
     let quizScore = 0;
+    
+    // Web Speech Recognition Controller
     let recognition = null;
+    let isHolding = false;
+    let recordedSpokenText = "";
 
     function switchRole(role) {
       activeRole = role;
@@ -974,6 +988,7 @@
 
       switchSession(1);
       updateCompletionBadges();
+      setupPressAndHoldEvents();
     }
 
     function logout() {
@@ -986,7 +1001,6 @@
       launchApp();
     }
 
-    /* Switch Antar Session */
     function switchSession(sessionNum) {
       currentSession = sessionNum;
       
@@ -1036,7 +1050,6 @@
       }
     }
 
-    /* Update Status Completed di Dashboard */
     function updateCompletionBadges() {
       const s1Completed = localStorage.getItem("completed_session_1") === "true";
       const s2Completed = localStorage.getItem("completed_session_2") === "true";
@@ -1137,100 +1150,178 @@
     }
 
     function showSpeakingQuestion() {
+      // Selalu matikan rekaman lama jika ada
+      cleanupSpeechRecognition();
+
       const current = quizQuestions[currentQuizIndex];
       document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Speaking ${currentQuizIndex + 1} of ${quizQuestions.length}`;
       document.getElementById("spk-word").innerText = current.word;
       document.getElementById("spk-phonetic").innerText = current.phonetic;
       document.getElementById("spk-meaning").innerText = current.meaning;
 
+      const micBtn = document.getElementById("mic-btn");
+      micBtn.classList.remove("holding");
+      document.getElementById("speech-tip").innerText = "Press & Hold to Speak";
       const feedback = document.getElementById("speech-feedback");
       feedback.innerText = "";
       feedback.style.color = "var(--text-main)";
-      document.getElementById("speech-tip").innerText = "Tap mic and speak in Indonesian";
+      
+      recordedSpokenText = "";
     }
 
-    /* === MICROPHONE RECOGNITION (FIXED FOR SAFARI & CHROME) === */
-    function startVoiceRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    /* === SETUP PRESS AND HOLD LOGIC (IOS & ANDROID COMPATIBLE) === */
+    function setupPressAndHoldEvents() {
+      const micBtn = document.getElementById("mic-btn");
 
+      // Mobile Touch Events
+      micBtn.addEventListener("touchstart", function(e) {
+        e.preventDefault();
+        startHoldToRecord();
+      }, { passive: false });
+
+      micBtn.addEventListener("touchend", function(e) {
+        e.preventDefault();
+        stopHoldToRecord();
+      }, { passive: false });
+
+      // Desktop Mouse Events
+      micBtn.addEventListener("mousedown", function(e) {
+        e.preventDefault();
+        startHoldToRecord();
+      });
+
+      micBtn.addEventListener("mouseup", function(e) {
+        e.preventDefault();
+        stopHoldToRecord();
+      });
+
+      micBtn.addEventListener("mouseleave", function(e) {
+        if (isHolding) stopHoldToRecord();
+      });
+    }
+
+    function cleanupSpeechRecognition() {
+      if (recognition) {
+        try {
+          recognition.onresult = null;
+          recognition.onerror = null;
+          recognition.onend = null;
+          recognition.abort();
+        } catch(e) {}
+        recognition = null;
+      }
+    }
+
+    function startHoldToRecord() {
+      if (isHolding) return;
+      isHolding = true;
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        alert("Your browser doesn't support Web Speech Recognition. Please use Safari on iPhone or Chrome!");
+        alert("Your browser does not support Speech Recognition. Please use Safari on iPhone or Chrome!");
+        isHolding = false;
         return;
       }
 
-      if (recognition) {
-        try { recognition.abort(); } catch(e) {}
-      }
+      cleanupSpeechRecognition();
 
       recognition = new SpeechRecognition();
       recognition.lang = "id-ID";
       recognition.interimResults = false;
+      recognition.continuous = false;
       recognition.maxAlternatives = 1;
-      recognition.continuous = false; // Kunci kestabilan untuk Safari iOS
 
       const micBtn = document.getElementById("mic-btn");
       const tip = document.getElementById("speech-tip");
       const feedback = document.getElementById("speech-feedback");
 
-      micBtn.classList.add("listening");
-      tip.innerText = "Listening... Speak clearly in Indonesian!";
+      micBtn.classList.add("holding");
+      tip.innerText = "🔴 Listening... Speak now!";
       feedback.innerText = "";
-
-      recognition.onstart = function() {
-        tip.innerText = "Microphone live! Pronounce the phrase now ~";
-      };
+      recordedSpokenText = "";
 
       recognition.onresult = function(event) {
-        micBtn.classList.remove("listening");
-        const spokenText = event.results[0][0].transcript.toLowerCase().trim();
-        const targetWord = quizQuestions[currentQuizIndex].word.toLowerCase().replace(/[\.\?!]/g, "").trim();
-
-        if (spokenText.includes(targetWord) || targetWord.includes(spokenText)) {
-          feedback.innerHTML = `✅ Beautiful pronunciation! You said: <i>"${spokenText}"</i>`;
-          feedback.style.color = "var(--success)";
-          quizScore += 1;
-          xp += 20;
-          document.getElementById("xp-count").innerText = xp;
-        } else {
-          feedback.innerHTML = `❌ Heard: <i>"${spokenText}"</i> (Keep practicing!)`;
-          feedback.style.color = "var(--error)";
+        if (event.results && event.results.length > 0) {
+          recordedSpokenText = event.results[0][0].transcript.toLowerCase().trim();
         }
-
-        setTimeout(() => {
-          currentQuizIndex++;
-          if (currentQuizIndex < quizQuestions.length) {
-            showSpeakingQuestion();
-          } else {
-            showInstantResult();
-          }
-        }, 1600);
-      };
-
-      recognition.onspeechend = function() {
-        micBtn.classList.remove("listening");
-        tip.innerText = "Processing your voice...";
-        try { recognition.stop(); } catch(e) {}
       };
 
       recognition.onerror = function(event) {
-        micBtn.classList.remove("listening");
-        if (event.error === "no-speech") {
-          tip.innerText = "No voice detected. Tap mic and try closer!";
-        } else {
-          tip.innerText = "Tap mic again to retry pronunciation.";
+        // Abaikan abort normal saat dilepas
+        if (event.error !== "aborted" && event.error !== "no-speech") {
+          console.log("Mic notice:", event.error);
         }
       };
 
       try {
         recognition.start();
       } catch (err) {
-        micBtn.classList.remove("listening");
-        tip.innerText = "Tap mic to retry.";
+        console.log("Recognition start warning:", err);
       }
+    }
+
+    function stopHoldToRecord() {
+      if (!isHolding) return;
+      isHolding = false;
+
+      const micBtn = document.getElementById("mic-btn");
+      const tip = document.getElementById("speech-tip");
+      const feedback = document.getElementById("speech-feedback");
+
+      micBtn.classList.remove("holding");
+      tip.innerText = "Processing voice...";
+
+      if (recognition) {
+        try {
+          recognition.stop();
+        } catch (e) {}
+      }
+
+      // Beri jeda 500ms agar audio buffer terbaca sempurna sebelum penilaian
+      setTimeout(() => {
+        evaluateSpokenWord();
+      }, 500);
+    }
+
+    function evaluateSpokenWord() {
+      const tip = document.getElementById("speech-tip");
+      const feedback = document.getElementById("speech-feedback");
+      const current = quizQuestions[currentQuizIndex];
+
+      if (!current) return;
+
+      const targetWord = current.word.toLowerCase().replace(/[\.\?!]/g, "").trim();
+
+      if (recordedSpokenText) {
+        if (recordedSpokenText.includes(targetWord) || targetWord.includes(recordedSpokenText)) {
+          feedback.innerHTML = `✅ Beautiful! You said: <i>"${recordedSpokenText}"</i>`;
+          feedback.style.color = "var(--success)";
+          quizScore += 1;
+          xp += 20;
+          document.getElementById("xp-count").innerText = xp;
+        } else {
+          feedback.innerHTML = `❌ Heard: <i>"${recordedSpokenText}"</i> (Keep practicing!)`;
+          feedback.style.color = "var(--error)";
+        }
+      } else {
+        feedback.innerHTML = `⚠️ No voice detected. Hold firmly and speak clearly!`;
+        feedback.style.color = "var(--error)";
+      }
+
+      // Transisi ke soal berikutnya secara bersih
+      setTimeout(() => {
+        currentQuizIndex++;
+        if (currentQuizIndex < quizQuestions.length) {
+          showSpeakingQuestion();
+        } else {
+          showInstantResult();
+        }
+      }, 1500);
     }
 
     /* === RESULT & AUTO COMPLETE === */
     function showInstantResult() {
+      cleanupSpeechRecognition();
       document.getElementById("quiz-mc-box").style.display = "none";
       document.getElementById("quiz-speaking-box").style.display = "none";
       document.getElementById("quiz-result-box").style.display = "block";
@@ -1239,7 +1330,6 @@
       const percentage = Math.round((quizScore / total) * 100);
       const studentName = localStorage.getItem("userName") || "Learner";
 
-      // Tandai Session ini sebagai COMPLETED otomatis
       localStorage.setItem(`completed_session_${currentSession}`, "true");
       updateCompletionBadges();
 
@@ -1271,6 +1361,7 @@
     }
 
     function exitQuiz() {
+      cleanupSpeechRecognition();
       document.getElementById("quiz-view").style.display = "none";
       document.getElementById("lessons-view").style.display = "block";
       updateCompletionBadges();
