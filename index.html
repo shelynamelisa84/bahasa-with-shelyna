@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IndoLearn with Shelyna 🌸</title>
   <style>
     :root {
@@ -27,7 +27,6 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      -webkit-touch-callout: none;
     }
 
     body {
@@ -560,7 +559,7 @@
       color: #991b1b !important;
     }
 
-    /* PRESS AND HOLD MIC STYLING */
+    /* SPEAKING TOGGLE STYLING */
     .mic-container {
       margin: 18px auto;
       display: flex;
@@ -582,21 +581,24 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
-    .mic-button.holding {
+    .mic-button.recording {
       background: #ef4444;
-      transform: scale(1.15);
-      box-shadow: 0 0 0 16px rgba(239, 68, 68, 0.25);
+      animation: pulseRecord 1.2s infinite;
+    }
+
+    @keyframes pulseRecord {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
 
     .speech-instruction {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: var(--text-main);
-      margin-top: 12px;
+      margin-top: 14px;
     }
 
     .speech-feedback {
@@ -604,6 +606,16 @@
       font-weight: 600;
       min-height: 28px;
       margin-top: 10px;
+    }
+
+    .btn-skip-speech {
+      margin-top: 14px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-decoration: underline;
+      cursor: pointer;
     }
 
     /* Result Card */
@@ -808,23 +820,25 @@
         <div class="options-grid" id="quiz-options-container"></div>
       </div>
 
-      <!-- Speaking Quiz Area (PRESS AND HOLD) -->
+      <!-- Speaking Quiz Area -->
       <div id="quiz-speaking-box" style="display: none;">
         <div class="quiz-prompt-card">
           <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">Pronounce this Indonesian phrase loudly & clearly:</p>
           <div class="quiz-question-word" id="spk-word">Terima kasih</div>
           <div class="quiz-question-phonetic" id="spk-phonetic">teh-ree-mah kah-seeh</div>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Meaning: <span id="spk-meaning" style="font-weight: 700; color: var(--primary);">Thank you</span></p>
+          <button class="speaker-btn" style="margin: 10px auto 0;" onclick="replaySpeakingPromptAudio()">🔊</button>
         </div>
 
         <div class="mic-container">
-          <button id="mic-btn" class="mic-button">🎙️</button>
-          <p id="speech-tip" class="speech-instruction">Press & Hold to Speak</p>
+          <button id="mic-btn" class="mic-button" onclick="toggleSpeechRecognition()">🎙️</button>
+          <p id="speech-tip" class="speech-instruction">Tap Mic to Start Speaking</p>
           <div id="speech-feedback" class="speech-feedback"></div>
+          <button class="btn-skip-speech" onclick="skipSpeakingQuestion()">Skip / Next Question →</button>
         </div>
       </div>
 
-      <!-- Skor Langsung Keluar + Sweet Appreciation -->
+      <!-- Hasil Kuis -->
       <div id="quiz-result-box" class="quiz-result-card">
         <div class="score-circle">
           <span class="number" id="result-score-percent">100%</span>
@@ -898,10 +912,8 @@
     let currentQuizIndex = 0;
     let quizScore = 0;
     
-    // Web Speech Recognition Controller
     let recognition = null;
-    let isHolding = false;
-    let recordedSpokenText = "";
+    let isRecording = false;
 
     function switchRole(role) {
       activeRole = role;
@@ -988,7 +1000,6 @@
 
       switchSession(1);
       updateCompletionBadges();
-      setupPressAndHoldEvents();
     }
 
     function logout() {
@@ -1123,6 +1134,11 @@
       if (current) playSound(current.word);
     }
 
+    function replaySpeakingPromptAudio() {
+      const current = quizQuestions[currentQuizIndex];
+      if (current) playSound(current.word);
+    }
+
     function selectVocabAnswer(button, chosen, correct) {
       const allButtons = document.querySelectorAll(".option-btn");
       allButtons.forEach(btn => btn.disabled = true);
@@ -1149,8 +1165,8 @@
       }, 1200);
     }
 
+    /* === REFINED SPEAKING LOGIC (1-TAP TOGGLE) === */
     function showSpeakingQuestion() {
-      // Selalu matikan rekaman lama jika ada
       cleanupSpeechRecognition();
 
       const current = quizQuestions[currentQuizIndex];
@@ -1160,47 +1176,18 @@
       document.getElementById("spk-meaning").innerText = current.meaning;
 
       const micBtn = document.getElementById("mic-btn");
-      micBtn.classList.remove("holding");
-      document.getElementById("speech-tip").innerText = "Press & Hold to Speak";
+      micBtn.classList.remove("recording");
+      document.getElementById("speech-tip").innerText = "Tap Mic to Start Speaking";
       const feedback = document.getElementById("speech-feedback");
       feedback.innerText = "";
       feedback.style.color = "var(--text-main)";
-      
-      recordedSpokenText = "";
-    }
-
-    /* === SETUP PRESS AND HOLD LOGIC (IOS & ANDROID COMPATIBLE) === */
-    function setupPressAndHoldEvents() {
-      const micBtn = document.getElementById("mic-btn");
-
-      // Mobile Touch Events
-      micBtn.addEventListener("touchstart", function(e) {
-        e.preventDefault();
-        startHoldToRecord();
-      }, { passive: false });
-
-      micBtn.addEventListener("touchend", function(e) {
-        e.preventDefault();
-        stopHoldToRecord();
-      }, { passive: false });
-
-      // Desktop Mouse Events
-      micBtn.addEventListener("mousedown", function(e) {
-        e.preventDefault();
-        startHoldToRecord();
-      });
-
-      micBtn.addEventListener("mouseup", function(e) {
-        e.preventDefault();
-        stopHoldToRecord();
-      });
-
-      micBtn.addEventListener("mouseleave", function(e) {
-        if (isHolding) stopHoldToRecord();
-      });
     }
 
     function cleanupSpeechRecognition() {
+      isRecording = false;
+      const micBtn = document.getElementById("mic-btn");
+      if (micBtn) micBtn.classList.remove("recording");
+
       if (recognition) {
         try {
           recognition.onresult = null;
@@ -1212,18 +1199,23 @@
       }
     }
 
-    function startHoldToRecord() {
-      if (isHolding) return;
-      isHolding = true;
+    function toggleSpeechRecognition() {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    }
 
+    function startRecording() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
         alert("Your browser does not support Speech Recognition. Please use Safari on iPhone or Chrome!");
-        isHolding = false;
         return;
       }
 
       cleanupSpeechRecognition();
+      isRecording = true;
 
       recognition = new SpeechRecognition();
       recognition.lang = "id-ID";
@@ -1235,80 +1227,71 @@
       const tip = document.getElementById("speech-tip");
       const feedback = document.getElementById("speech-feedback");
 
-      micBtn.classList.add("holding");
-      tip.innerText = "🔴 Listening... Speak now!";
+      micBtn.classList.add("recording");
+      tip.innerText = "🔴 Listening... Speak now (tap mic to stop)";
       feedback.innerText = "";
-      recordedSpokenText = "";
 
       recognition.onresult = function(event) {
         if (event.results && event.results.length > 0) {
-          recordedSpokenText = event.results[0][0].transcript.toLowerCase().trim();
+          const spoken = event.results[0][0].transcript.toLowerCase().trim();
+          evaluateSpokenWord(spoken);
         }
       };
 
       recognition.onerror = function(event) {
-        // Abaikan abort normal saat dilepas
-        if (event.error !== "aborted" && event.error !== "no-speech") {
-          console.log("Mic notice:", event.error);
+        if (event.error === "no-speech") {
+          tip.innerText = "No voice heard. Tap mic and try again closer ~";
+        } else {
+          tip.innerText = "Tap mic to retry pronunciation.";
+        }
+        cleanupSpeechRecognition();
+      };
+
+      recognition.onend = function() {
+        if (isRecording) {
+          cleanupSpeechRecognition();
+          tip.innerText = "Tap Mic to Start Speaking";
         }
       };
 
       try {
         recognition.start();
-      } catch (err) {
-        console.log("Recognition start warning:", err);
+      } catch(err) {
+        cleanupSpeechRecognition();
+        tip.innerText = "Tap mic to retry.";
       }
     }
 
-    function stopHoldToRecord() {
-      if (!isHolding) return;
-      isHolding = false;
-
-      const micBtn = document.getElementById("mic-btn");
+    function stopRecording() {
       const tip = document.getElementById("speech-tip");
-      const feedback = document.getElementById("speech-feedback");
-
-      micBtn.classList.remove("holding");
       tip.innerText = "Processing voice...";
-
       if (recognition) {
-        try {
-          recognition.stop();
-        } catch (e) {}
+        try { recognition.stop(); } catch(e) {}
       }
-
-      // Beri jeda 500ms agar audio buffer terbaca sempurna sebelum penilaian
-      setTimeout(() => {
-        evaluateSpokenWord();
-      }, 500);
+      isRecording = false;
+      document.getElementById("mic-btn").classList.remove("recording");
     }
 
-    function evaluateSpokenWord() {
-      const tip = document.getElementById("speech-tip");
+    function evaluateSpokenWord(spokenText) {
+      cleanupSpeechRecognition();
+
       const feedback = document.getElementById("speech-feedback");
       const current = quizQuestions[currentQuizIndex];
-
       if (!current) return;
 
       const targetWord = current.word.toLowerCase().replace(/[\.\?!]/g, "").trim();
 
-      if (recordedSpokenText) {
-        if (recordedSpokenText.includes(targetWord) || targetWord.includes(recordedSpokenText)) {
-          feedback.innerHTML = `✅ Beautiful! You said: <i>"${recordedSpokenText}"</i>`;
-          feedback.style.color = "var(--success)";
-          quizScore += 1;
-          xp += 20;
-          document.getElementById("xp-count").innerText = xp;
-        } else {
-          feedback.innerHTML = `❌ Heard: <i>"${recordedSpokenText}"</i> (Keep practicing!)`;
-          feedback.style.color = "var(--error)";
-        }
+      if (spokenText.includes(targetWord) || targetWord.includes(spokenText)) {
+        feedback.innerHTML = `✅ Beautiful! You said: <i>"${spokenText}"</i>`;
+        feedback.style.color = "var(--success)";
+        quizScore += 1;
+        xp += 20;
+        document.getElementById("xp-count").innerText = xp;
       } else {
-        feedback.innerHTML = `⚠️ No voice detected. Hold firmly and speak clearly!`;
+        feedback.innerHTML = `❌ Heard: <i>"${spokenText}"</i> (Keep practicing!)`;
         feedback.style.color = "var(--error)";
       }
 
-      // Transisi ke soal berikutnya secara bersih
       setTimeout(() => {
         currentQuizIndex++;
         if (currentQuizIndex < quizQuestions.length) {
@@ -1317,6 +1300,16 @@
           showInstantResult();
         }
       }, 1500);
+    }
+
+    function skipSpeakingQuestion() {
+      cleanupSpeechRecognition();
+      currentQuizIndex++;
+      if (currentQuizIndex < quizQuestions.length) {
+        showSpeakingQuestion();
+      } else {
+        showInstantResult();
+      }
     }
 
     /* === RESULT & AUTO COMPLETE === */
