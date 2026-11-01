@@ -385,7 +385,7 @@
       transform: translateY(-2px);
     }
 
-    .btn-quiz-speaking {
+    .btn-quiz-listening {
       background: #f43f5e;
       color: #ffffff;
       border: none;
@@ -401,7 +401,7 @@
       white-space: nowrap;
     }
 
-    .btn-quiz-speaking:hover {
+    .btn-quiz-listening:hover {
       background: #e11d48;
       transform: translateY(-2px);
     }
@@ -559,63 +559,31 @@
       color: #991b1b !important;
     }
 
-    /* SPEAKING TOGGLE STYLING */
-    .mic-container {
-      margin: 18px auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .mic-button {
-      width: 90px;
-      height: 90px;
+    /* LISTENING CHALLENGE SPECIAL STYLING */
+    .listen-large-btn {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       background: var(--primary);
       color: white;
       border: none;
       font-size: 2.2rem;
       cursor: pointer;
-      box-shadow: 0 6px 18px rgba(251, 113, 133, 0.4);
+      box-shadow: 0 6px 18px rgba(251, 113, 133, 0.35);
+      margin: 14px auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
 
-    .mic-button.recording {
-      background: #ef4444;
-      animation: pulseRecord 1.2s infinite;
+    .listen-large-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.08);
     }
 
-    @keyframes pulseRecord {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
-      70% { transform: scale(1.1); box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-    }
-
-    .speech-instruction {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-top: 14px;
-    }
-
-    .speech-feedback {
-      font-size: 1rem;
-      font-weight: 600;
-      min-height: 28px;
-      margin-top: 10px;
-    }
-
-    .btn-skip-speech {
-      margin-top: 14px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      text-decoration: underline;
-      cursor: pointer;
+    .listen-large-btn:active {
+      transform: scale(0.95);
     }
 
     /* Result Card */
@@ -793,8 +761,8 @@
             <p class="chapter-desc" id="session-display-desc">Learn how to greet others, introduce yourself, and show courtesy in daily Indonesian.</p>
           </div>
           <div class="quiz-buttons-group">
-            <button class="btn-quiz" onclick="startQuiz('vocab')">⭐ Multiple Choice</button>
-            <button class="btn-quiz-speaking" onclick="startQuiz('speaking')">🎙️ Speaking Quiz</button>
+            <button class="btn-quiz" onclick="startQuiz('vocab')">⭐ Vocabulary Quiz</button>
+            <button class="btn-quiz-listening" onclick="startQuiz('listening')">🎧 Listening Quiz</button>
           </div>
         </div>
 
@@ -802,14 +770,14 @@
       </main>
     </div>
 
-    <!-- Halaman Kuis Interaktif & Speaking -->
+    <!-- Halaman Kuis Interaktif -->
     <div id="quiz-view" class="quiz-view">
       <div class="quiz-header">
         <button class="btn-back-lessons" onclick="exitQuiz()">← Back to Lessons</button>
         <span id="quiz-progress-text" style="font-weight: 700; color: var(--primary-hover);">Question 1 of 5</span>
       </div>
 
-      <!-- Multiple Choice Area -->
+      <!-- Mode 1: Vocabulary Meaning Quiz -->
       <div id="quiz-mc-box" style="display: none;">
         <div class="quiz-prompt-card">
           <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">What is the English meaning of:</p>
@@ -820,22 +788,16 @@
         <div class="options-grid" id="quiz-options-container"></div>
       </div>
 
-      <!-- Speaking Quiz Area -->
-      <div id="quiz-speaking-box" style="display: none;">
+      <!-- Mode 2: Pure Listening & Ear Training Quiz -->
+      <div id="quiz-listening-box" style="display: none;">
         <div class="quiz-prompt-card">
-          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">Pronounce this Indonesian phrase loudly & clearly:</p>
-          <div class="quiz-question-word" id="spk-word">Terima kasih</div>
-          <div class="quiz-question-phonetic" id="spk-phonetic">teh-ree-mah kah-seeh</div>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Meaning: <span id="spk-meaning" style="font-weight: 700; color: var(--primary);">Thank you</span></p>
-          <button class="speaker-btn" style="margin: 10px auto 0;" onclick="replaySpeakingPromptAudio()">🔊</button>
+          <p style="font-size: 0.95rem; font-weight: 600; color: var(--text-main); margin-bottom: 6px;">🎧 Listen carefully and pick what you hear:</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">(Tap the big pink button to replay audio)</p>
+          
+          <button class="listen-large-btn" onclick="replayListeningAudio()">🔊</button>
+          <p id="listen-status-tip" style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">Playing sound...</p>
         </div>
-
-        <div class="mic-container">
-          <button id="mic-btn" class="mic-button" onclick="toggleSpeechRecognition()">🎙️</button>
-          <p id="speech-tip" class="speech-instruction">Tap Mic to Start Speaking</p>
-          <div id="speech-feedback" class="speech-feedback"></div>
-          <button class="btn-skip-speech" onclick="skipSpeakingQuestion()">Skip / Next Question →</button>
-        </div>
+        <div class="options-grid" id="quiz-listen-options-container"></div>
       </div>
 
       <!-- Hasil Kuis -->
@@ -911,9 +873,6 @@
     let quizQuestions = [];
     let currentQuizIndex = 0;
     let quizScore = 0;
-    
-    let recognition = null;
-    let isRecording = false;
 
     function switchRole(role) {
       activeRole = role;
@@ -1048,12 +1007,17 @@
       });
     }
 
-    function playSound(text) {
+    function playSound(text, onEndCallback = null) {
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = "id-ID";
-        utterance.rate = 0.9;
+        utterance.rate = 0.85;
+
+        if (onEndCallback) {
+          utterance.onend = onEndCallback;
+        }
+
         window.speechSynthesis.speak(utterance);
 
         xp += 5;
@@ -1087,12 +1051,12 @@
 
       if (mode === 'vocab') {
         document.getElementById("quiz-mc-box").style.display = "block";
-        document.getElementById("quiz-speaking-box").style.display = "none";
+        document.getElementById("quiz-listening-box").style.display = "none";
         showVocabQuestion();
       } else {
         document.getElementById("quiz-mc-box").style.display = "none";
-        document.getElementById("quiz-speaking-box").style.display = "block";
-        showSpeakingQuestion();
+        document.getElementById("quiz-listening-box").style.display = "block";
+        showListeningQuestion();
       }
     }
 
@@ -1100,6 +1064,7 @@
       startQuiz(quizMode);
     }
 
+    /* --- Mode 1: Meaning Quiz --- */
     function showVocabQuestion() {
       const current = quizQuestions[currentQuizIndex];
       const allCurrentVocab = sessionsData[currentSession].vocab;
@@ -1134,13 +1099,8 @@
       if (current) playSound(current.word);
     }
 
-    function replaySpeakingPromptAudio() {
-      const current = quizQuestions[currentQuizIndex];
-      if (current) playSound(current.word);
-    }
-
     function selectVocabAnswer(button, chosen, correct) {
-      const allButtons = document.querySelectorAll(".option-btn");
+      const allButtons = document.querySelectorAll("#quiz-options-container .option-btn");
       allButtons.forEach(btn => btn.disabled = true);
 
       if (chosen === correct) {
@@ -1165,158 +1125,75 @@
       }, 1200);
     }
 
-    /* === REFINED SPEAKING LOGIC (1-TAP TOGGLE) === */
-    function showSpeakingQuestion() {
-      cleanupSpeechRecognition();
-
+    /* --- Mode 2: Pure Listening & Audio Challenge --- */
+    function showListeningQuestion() {
       const current = quizQuestions[currentQuizIndex];
-      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Speaking ${currentQuizIndex + 1} of ${quizQuestions.length}`;
-      document.getElementById("spk-word").innerText = current.word;
-      document.getElementById("spk-phonetic").innerText = current.phonetic;
-      document.getElementById("spk-meaning").innerText = current.meaning;
+      const allCurrentVocab = sessionsData[currentSession].vocab;
 
-      const micBtn = document.getElementById("mic-btn");
-      micBtn.classList.remove("recording");
-      document.getElementById("speech-tip").innerText = "Tap Mic to Start Speaking";
-      const feedback = document.getElementById("speech-feedback");
-      feedback.innerText = "";
-      feedback.style.color = "var(--text-main)";
+      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Listening ${currentQuizIndex + 1} of ${quizQuestions.length}`;
+      
+      const tip = document.getElementById("listen-status-tip");
+      tip.innerText = "Playing audio... 🌸";
+      
+      playSound(current.word, () => {
+        tip.innerText = "Tap 🔊 anytime to replay!";
+      });
+
+      // Siapkan 4 pilihan kata bahasa Indonesia yang cocok dengan suara yang didengar
+      const distractors = allCurrentVocab
+        .filter(item => item.word !== current.word)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map(item => item.word);
+
+      const options = [...distractors, current.word].sort(() => 0.5 - Math.random());
+      const optionsContainer = document.getElementById("quiz-listen-options-container");
+      optionsContainer.innerHTML = "";
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = opt;
+        btn.onclick = () => selectListeningAnswer(btn, opt, current.word);
+        optionsContainer.appendChild(btn);
+      });
     }
 
-    function cleanupSpeechRecognition() {
-      isRecording = false;
-      const micBtn = document.getElementById("mic-btn");
-      if (micBtn) micBtn.classList.remove("recording");
-
-      if (recognition) {
-        try {
-          recognition.onresult = null;
-          recognition.onerror = null;
-          recognition.onend = null;
-          recognition.abort();
-        } catch(e) {}
-        recognition = null;
-      }
-    }
-
-    function toggleSpeechRecognition() {
-      if (isRecording) {
-        stopRecording();
-      } else {
-        startRecording();
-      }
-    }
-
-    function startRecording() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert("Your browser does not support Speech Recognition. Please use Safari on iPhone or Chrome!");
-        return;
-      }
-
-      cleanupSpeechRecognition();
-      isRecording = true;
-
-      recognition = new SpeechRecognition();
-      recognition.lang = "id-ID";
-      recognition.interimResults = false;
-      recognition.continuous = false;
-      recognition.maxAlternatives = 1;
-
-      const micBtn = document.getElementById("mic-btn");
-      const tip = document.getElementById("speech-tip");
-      const feedback = document.getElementById("speech-feedback");
-
-      micBtn.classList.add("recording");
-      tip.innerText = "🔴 Listening... Speak now (tap mic to stop)";
-      feedback.innerText = "";
-
-      recognition.onresult = function(event) {
-        if (event.results && event.results.length > 0) {
-          const spoken = event.results[0][0].transcript.toLowerCase().trim();
-          evaluateSpokenWord(spoken);
-        }
-      };
-
-      recognition.onerror = function(event) {
-        if (event.error === "no-speech") {
-          tip.innerText = "No voice heard. Tap mic and try again closer ~";
-        } else {
-          tip.innerText = "Tap mic to retry pronunciation.";
-        }
-        cleanupSpeechRecognition();
-      };
-
-      recognition.onend = function() {
-        if (isRecording) {
-          cleanupSpeechRecognition();
-          tip.innerText = "Tap Mic to Start Speaking";
-        }
-      };
-
-      try {
-        recognition.start();
-      } catch(err) {
-        cleanupSpeechRecognition();
-        tip.innerText = "Tap mic to retry.";
-      }
-    }
-
-    function stopRecording() {
-      const tip = document.getElementById("speech-tip");
-      tip.innerText = "Processing voice...";
-      if (recognition) {
-        try { recognition.stop(); } catch(e) {}
-      }
-      isRecording = false;
-      document.getElementById("mic-btn").classList.remove("recording");
-    }
-
-    function evaluateSpokenWord(spokenText) {
-      cleanupSpeechRecognition();
-
-      const feedback = document.getElementById("speech-feedback");
+    function replayListeningAudio() {
       const current = quizQuestions[currentQuizIndex];
-      if (!current) return;
+      if (current) playSound(current.word);
+    }
 
-      const targetWord = current.word.toLowerCase().replace(/[\.\?!]/g, "").trim();
+    function selectListeningAnswer(button, chosen, correct) {
+      const allButtons = document.querySelectorAll("#quiz-listen-options-container .option-btn");
+      allButtons.forEach(btn => btn.disabled = true);
 
-      if (spokenText.includes(targetWord) || targetWord.includes(spokenText)) {
-        feedback.innerHTML = `✅ Beautiful! You said: <i>"${spokenText}"</i>`;
-        feedback.style.color = "var(--success)";
+      if (chosen === correct) {
+        button.classList.add("correct");
         quizScore += 1;
         xp += 20;
         document.getElementById("xp-count").innerText = xp;
       } else {
-        feedback.innerHTML = `❌ Heard: <i>"${spokenText}"</i> (Keep practicing!)`;
-        feedback.style.color = "var(--error)";
+        button.classList.add("wrong");
+        allButtons.forEach(btn => {
+          if (btn.innerText === correct) btn.classList.add("correct");
+        });
       }
 
       setTimeout(() => {
         currentQuizIndex++;
         if (currentQuizIndex < quizQuestions.length) {
-          showSpeakingQuestion();
+          showListeningQuestion();
         } else {
           showInstantResult();
         }
-      }, 1500);
-    }
-
-    function skipSpeakingQuestion() {
-      cleanupSpeechRecognition();
-      currentQuizIndex++;
-      if (currentQuizIndex < quizQuestions.length) {
-        showSpeakingQuestion();
-      } else {
-        showInstantResult();
-      }
+      }, 1200);
     }
 
     /* === RESULT & AUTO COMPLETE === */
     function showInstantResult() {
-      cleanupSpeechRecognition();
       document.getElementById("quiz-mc-box").style.display = "none";
-      document.getElementById("quiz-speaking-box").style.display = "none";
+      document.getElementById("quiz-listening-box").style.display = "none";
       document.getElementById("quiz-result-box").style.display = "block";
 
       const total = quizQuestions.length;
@@ -1335,7 +1212,7 @@
       if (percentage === 100) {
         stars += 2;
         appTitle.innerText = "Pure Perfection! You're Shining ✨";
-        appText.innerHTML = `“Oh wow, ${studentName}! A perfect 100% on Session ${currentSession}! Shelyna is so unbelievably proud of you! You're picking up Indonesian with such elegance and ease ~”`;
+        appText.innerHTML = `“Oh wow, ${studentName}! A perfect 100% on Session ${currentSession}! Shelyna is so unbelievably proud of you! Your listening ear is so sharp and accurate ~”`;
       } else if (percentage >= 80) {
         stars += 2;
         appTitle.innerText = "Wonderfully Done, My Star! 🌸";
@@ -1354,7 +1231,6 @@
     }
 
     function exitQuiz() {
-      cleanupSpeechRecognition();
       document.getElementById("quiz-view").style.display = "none";
       document.getElementById("lessons-view").style.display = "block";
       updateCompletionBadges();
