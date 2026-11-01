@@ -15,6 +15,7 @@
       --success: #10b981;
       --success-light: #dcfce7;
       --error: #ef4444;
+      --error-light: #fee2e2;
       --text-main: #374151;
       --text-muted: #6b7280;
       --border: #fbcfe8;
@@ -27,6 +28,7 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -530,32 +532,36 @@
       margin-top: 14px;
     }
 
+    /* Base Option Button Styling - Netral */
     .option-btn {
-      background: #ffffff;
-      border: 2px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 16px 14px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-main);
+      background-color: #ffffff !important;
+      border: 2px solid #e5e7eb !important;
+      border-radius: 14px !important;
+      padding: 16px 14px !important;
+      font-size: 1rem !important;
+      font-weight: 600 !important;
+      color: var(--text-main) !important;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: border-color 0.2s, background-color 0.2s;
       outline: none;
+      user-select: none;
+      box-shadow: none !important;
     }
 
     .option-btn:hover {
-      border-color: var(--primary);
-      background: var(--primary-light);
+      border-color: var(--primary) !important;
+      background-color: var(--primary-light) !important;
     }
 
-    .option-btn.correct {
-      background: #dcfce7 !important;
+    /* Hanya aktif saat class eksplisit dipasang lewat JavaScript */
+    .option-btn.btn-is-correct {
+      background-color: var(--success-light) !important;
       border-color: var(--success) !important;
       color: #166534 !important;
     }
 
-    .option-btn.wrong {
-      background: #fee2e2 !important;
+    .option-btn.btn-is-wrong {
+      background-color: var(--error-light) !important;
       border-color: var(--error) !important;
       color: #991b1b !important;
     }
@@ -830,6 +836,7 @@
     let currentSession = 1;
     let xp = 0;
     let stars = 0;
+    let isAnsweringLocked = false; // Mencegah klik beruntun sebelum transisi selesai
     const TEACHER_DEFAULT_PASS = "admin123";
 
     const sessionsData = {
@@ -1047,6 +1054,7 @@
     function startQuiz(mode) {
       stopAllAudio();
       quizMode = mode;
+      isAnsweringLocked = false;
       document.getElementById("lessons-view").style.display = "none";
       document.getElementById("quiz-view").style.display = "block";
       document.getElementById("quiz-result-box").style.display = "none";
@@ -1072,9 +1080,14 @@
       startQuiz(quizMode);
     }
 
-    /* --- MODE 1: VOCABULARY QUIZ (PURE READING / MEMBACA TEKS) --- */
+    /* --- MODE 1: VOCABULARY QUIZ (PURE READING) --- */
     function showVocabQuestion() {
-      stopAllAudio(); // Tidak ada audio sama sekali di mode ini
+      stopAllAudio();
+      isAnsweringLocked = false;
+
+      // Lepaskan fokus dan seleksi dari klik pertanyaan sebelumnya
+      if (document.activeElement) document.activeElement.blur();
+      window.getSelection()?.removeAllRanges();
 
       const current = quizQuestions[currentQuizIndex];
       const allCurrentVocab = sessionsData[currentSession].vocab;
@@ -1092,35 +1105,41 @@
       const options = [...distractors, current.meaning].sort(() => 0.5 - Math.random());
       const optionsContainer = document.getElementById("quiz-options-container");
       
-      // Bersihkan total elemen opsi lama agar tidak ada bekas warna tombol sebelumnya
+      // Hancurkan seluruh isi wadah tombol
       optionsContainer.innerHTML = "";
 
       options.forEach(opt => {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "option-btn";
         btn.innerText = opt;
-        btn.onclick = () => selectVocabAnswer(btn, opt, current.meaning);
+        btn.onclick = (e) => {
+          e.preventDefault();
+          selectVocabAnswer(btn, opt, current.meaning);
+        };
         optionsContainer.appendChild(btn);
       });
     }
 
     function selectVocabAnswer(button, chosen, correct) {
+      if (isAnsweringLocked) return;
+      isAnsweringLocked = true;
+
       const allButtons = document.querySelectorAll("#quiz-options-container .option-btn");
       allButtons.forEach(btn => btn.disabled = true);
 
       if (chosen === correct) {
-        button.classList.add("correct");
+        button.classList.add("btn-is-correct");
         quizScore += 1;
         xp += 15;
         document.getElementById("xp-count").innerText = xp;
       } else {
-        button.classList.add("wrong");
+        button.classList.add("btn-is-wrong");
         allButtons.forEach(btn => {
-          if (btn.innerText === correct) btn.classList.add("correct");
+          if (btn.innerText === correct) btn.classList.add("btn-is-correct");
         });
       }
 
-      // Berpindah ke pertanyaan berikutnya dan mereset tombol
       setTimeout(() => {
         currentQuizIndex++;
         if (currentQuizIndex < quizQuestions.length) {
@@ -1128,11 +1147,17 @@
         } else {
           showInstantResult();
         }
-      }, 1200);
+      }, 1000);
     }
 
-    /* --- MODE 2: LISTENING QUIZ (PURE HEARING / UJI PENDENGARAN AUDIO) --- */
+    /* --- MODE 2: LISTENING QUIZ (PURE HEARING) --- */
     function showListeningQuestion() {
+      isAnsweringLocked = false;
+
+      // Lepaskan fokus dan seleksi dari klik pertanyaan sebelumnya
+      if (document.activeElement) document.activeElement.blur();
+      window.getSelection()?.removeAllRanges();
+
       const current = quizQuestions[currentQuizIndex];
       const allCurrentVocab = sessionsData[currentSession].vocab;
 
@@ -1141,9 +1166,8 @@
       const tip = document.getElementById("listen-status-tip");
       tip.innerText = "Playing audio... 🌸";
       
-      // Putar suara kata secara otomatis
       playSound(current.word, () => {
-        tip.innerText = "Tap 🔊 to listen again";
+        tip.innerText = "Tap 🔊 to replay";
       });
 
       const distractors = allCurrentVocab
@@ -1155,14 +1179,18 @@
       const options = [...distractors, current.word].sort(() => 0.5 - Math.random());
       const optionsContainer = document.getElementById("quiz-listen-options-container");
       
-      // Bersihkan total elemen opsi lama
+      // Hancurkan seluruh isi wadah tombol
       optionsContainer.innerHTML = "";
 
       options.forEach(opt => {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "option-btn";
         btn.innerText = opt;
-        btn.onclick = () => selectListeningAnswer(btn, opt, current.word);
+        btn.onclick = (e) => {
+          e.preventDefault();
+          selectListeningAnswer(btn, opt, current.word);
+        };
         optionsContainer.appendChild(btn);
       });
     }
@@ -1173,22 +1201,24 @@
     }
 
     function selectListeningAnswer(button, chosen, correct) {
+      if (isAnsweringLocked) return;
+      isAnsweringLocked = true;
+
       const allButtons = document.querySelectorAll("#quiz-listen-options-container .option-btn");
       allButtons.forEach(btn => btn.disabled = true);
 
       if (chosen === correct) {
-        button.classList.add("correct");
+        button.classList.add("btn-is-correct");
         quizScore += 1;
         xp += 20;
         document.getElementById("xp-count").innerText = xp;
       } else {
-        button.classList.add("wrong");
+        button.classList.add("btn-is-wrong");
         allButtons.forEach(btn => {
-          if (btn.innerText === correct) btn.classList.add("correct");
+          if (btn.innerText === correct) btn.classList.add("btn-is-correct");
         });
       }
 
-      // Berpindah ke pertanyaan berikutnya dan mereset tombol
       setTimeout(() => {
         currentQuizIndex++;
         if (currentQuizIndex < quizQuestions.length) {
@@ -1196,7 +1226,7 @@
         } else {
           showInstantResult();
         }
-      }, 1200);
+      }, 1000);
     }
 
     /* === RESULT & AUTO COMPLETE === */
