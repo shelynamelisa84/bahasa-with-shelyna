@@ -278,7 +278,6 @@
       box-shadow: var(--shadow);
     }
 
-    /* Badge Completed di Dashboard Session */
     .badge-completed {
       background: var(--success-light);
       color: #166534;
@@ -888,7 +887,7 @@
     let quizQuestions = [];
     let currentQuizIndex = 0;
     let quizScore = 0;
-    let recognition;
+    let recognition = null;
 
     function switchRole(role) {
       activeRole = role;
@@ -1150,25 +1149,36 @@
       document.getElementById("speech-tip").innerText = "Tap mic and speak in Indonesian";
     }
 
+    /* === MICROPHONE RECOGNITION (FIXED FOR SAFARI & CHROME) === */
     function startVoiceRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
       if (!SpeechRecognition) {
-        alert("Your browser doesn't support microphone recognition. Please use Google Chrome or Microsoft Edge!");
+        alert("Your browser doesn't support Web Speech Recognition. Please use Safari on iPhone or Chrome!");
         return;
+      }
+
+      if (recognition) {
+        try { recognition.abort(); } catch(e) {}
       }
 
       recognition = new SpeechRecognition();
       recognition.lang = "id-ID";
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
+      recognition.continuous = false; // Kunci kestabilan untuk Safari iOS
 
       const micBtn = document.getElementById("mic-btn");
       const tip = document.getElementById("speech-tip");
       const feedback = document.getElementById("speech-feedback");
 
       micBtn.classList.add("listening");
-      tip.innerText = "Listening... Speak now!";
+      tip.innerText = "Listening... Speak clearly in Indonesian!";
+      feedback.innerText = "";
+
+      recognition.onstart = function() {
+        tip.innerText = "Microphone live! Pronounce the phrase now ~";
+      };
 
       recognition.onresult = function(event) {
         micBtn.classList.remove("listening");
@@ -1176,7 +1186,7 @@
         const targetWord = quizQuestions[currentQuizIndex].word.toLowerCase().replace(/[\.\?!]/g, "").trim();
 
         if (spokenText.includes(targetWord) || targetWord.includes(spokenText)) {
-          feedback.innerHTML = `✅ Great pronunciation! You said: <i>"${spokenText}"</i>`;
+          feedback.innerHTML = `✅ Beautiful pronunciation! You said: <i>"${spokenText}"</i>`;
           feedback.style.color = "var(--success)";
           quizScore += 1;
           xp += 20;
@@ -1196,12 +1206,27 @@
         }, 1600);
       };
 
-      recognition.onerror = function() {
+      recognition.onspeechend = function() {
         micBtn.classList.remove("listening");
-        tip.innerText = "Could not hear you clearly. Please tap and try again!";
+        tip.innerText = "Processing your voice...";
+        try { recognition.stop(); } catch(e) {}
       };
 
-      recognition.start();
+      recognition.onerror = function(event) {
+        micBtn.classList.remove("listening");
+        if (event.error === "no-speech") {
+          tip.innerText = "No voice detected. Tap mic and try closer!";
+        } else {
+          tip.innerText = "Tap mic again to retry pronunciation.";
+        }
+      };
+
+      try {
+        recognition.start();
+      } catch (err) {
+        micBtn.classList.remove("listening");
+        tip.innerText = "Tap mic to retry.";
+      }
     }
 
     /* === RESULT & AUTO COMPLETE === */
