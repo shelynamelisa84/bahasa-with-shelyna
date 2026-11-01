@@ -540,6 +540,7 @@
       color: var(--text-main);
       cursor: pointer;
       transition: all 0.2s;
+      outline: none;
     }
 
     .option-btn:hover {
@@ -559,7 +560,6 @@
       color: #991b1b !important;
     }
 
-    /* LISTENING CHALLENGE SPECIAL STYLING */
     .listen-large-btn {
       width: 80px;
       height: 80px;
@@ -777,25 +777,25 @@
         <span id="quiz-progress-text" style="font-weight: 700; color: var(--primary-hover);">Question 1 of 5</span>
       </div>
 
-      <!-- Mode 1: Vocabulary Meaning Quiz -->
+      <!-- Mode 1: VOCABULARY QUIZ (Pure Reading & Meaning) -->
       <div id="quiz-mc-box" style="display: none;">
         <div class="quiz-prompt-card">
-          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">What is the English meaning of:</p>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">📖 Read the Indonesian phrase below and select its English meaning:</p>
           <div class="quiz-question-word" id="mc-word">Selamat pagi</div>
           <div class="quiz-question-phonetic" id="mc-phonetic">suh-lah-maht pah-ghee</div>
-          <button class="speaker-btn" style="margin: 12px auto 0;" onclick="replayQuizAudio()">🔊</button>
         </div>
         <div class="options-grid" id="quiz-options-container"></div>
       </div>
 
-      <!-- Mode 2: Pure Listening & Ear Training Quiz -->
+      <!-- Mode 2: LISTENING QUIZ (Pure Audio & Hearing) -->
       <div id="quiz-listening-box" style="display: none;">
         <div class="quiz-prompt-card">
-          <p style="font-size: 0.95rem; font-weight: 600; color: var(--text-main); margin-bottom: 6px;">🎧 Listen carefully and pick what you hear:</p>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">(Tap the big pink button to replay audio)</p>
+          <p style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">🎧 Listen carefully to the pronunciation:</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Which Indonesian phrase did you hear?</p>
           
-          <button class="listen-large-btn" onclick="replayListeningAudio()">🔊</button>
-          <p id="listen-status-tip" style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">Playing sound...</p>
+          <button class="listen-large-btn" onclick="replayListeningAudio()" title="Replay Audio">🔊</button>
+          <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-top: 6px;">[ Listen Carefully ]</div>
+          <p id="listen-status-tip" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Tap 🔊 to replay</p>
         </div>
         <div class="options-grid" id="quiz-listen-options-container"></div>
       </div>
@@ -962,6 +962,7 @@
     }
 
     function logout() {
+      stopAllAudio();
       localStorage.removeItem("userRole");
       localStorage.removeItem("userName");
       document.getElementById("student-name").value = "";
@@ -1007,6 +1008,12 @@
       });
     }
 
+    function stopAllAudio() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
     function playSound(text, onEndCallback = null) {
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
@@ -1038,6 +1045,7 @@
 
     /* === QUIZ CONTROLLER === */
     function startQuiz(mode) {
+      stopAllAudio();
       quizMode = mode;
       document.getElementById("lessons-view").style.display = "none";
       document.getElementById("quiz-view").style.display = "block";
@@ -1064,16 +1072,16 @@
       startQuiz(quizMode);
     }
 
-    /* --- Mode 1: Meaning Quiz --- */
+    /* --- MODE 1: VOCABULARY QUIZ (PURE READING / MEMBACA TEKS) --- */
     function showVocabQuestion() {
+      stopAllAudio(); // Tidak ada audio sama sekali di mode ini
+
       const current = quizQuestions[currentQuizIndex];
       const allCurrentVocab = sessionsData[currentSession].vocab;
 
-      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Question ${currentQuizIndex + 1} of ${quizQuestions.length}`;
+      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Vocab Quiz ${currentQuizIndex + 1} of ${quizQuestions.length}`;
       document.getElementById("mc-word").innerText = current.word;
       document.getElementById("mc-phonetic").innerText = current.phonetic;
-
-      playSound(current.word);
 
       const distractors = allCurrentVocab
         .filter(item => item.meaning !== current.meaning)
@@ -1083,6 +1091,8 @@
 
       const options = [...distractors, current.meaning].sort(() => 0.5 - Math.random());
       const optionsContainer = document.getElementById("quiz-options-container");
+      
+      // Bersihkan total elemen opsi lama agar tidak ada bekas warna tombol sebelumnya
       optionsContainer.innerHTML = "";
 
       options.forEach(opt => {
@@ -1092,11 +1102,6 @@
         btn.onclick = () => selectVocabAnswer(btn, opt, current.meaning);
         optionsContainer.appendChild(btn);
       });
-    }
-
-    function replayQuizAudio() {
-      const current = quizQuestions[currentQuizIndex];
-      if (current) playSound(current.word);
     }
 
     function selectVocabAnswer(button, chosen, correct) {
@@ -1115,6 +1120,7 @@
         });
       }
 
+      // Berpindah ke pertanyaan berikutnya dan mereset tombol
       setTimeout(() => {
         currentQuizIndex++;
         if (currentQuizIndex < quizQuestions.length) {
@@ -1125,21 +1131,21 @@
       }, 1200);
     }
 
-    /* --- Mode 2: Pure Listening & Audio Challenge --- */
+    /* --- MODE 2: LISTENING QUIZ (PURE HEARING / UJI PENDENGARAN AUDIO) --- */
     function showListeningQuestion() {
       const current = quizQuestions[currentQuizIndex];
       const allCurrentVocab = sessionsData[currentSession].vocab;
 
-      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Listening ${currentQuizIndex + 1} of ${quizQuestions.length}`;
+      document.getElementById("quiz-progress-text").innerText = `Session ${currentSession} • Listening Quiz ${currentQuizIndex + 1} of ${quizQuestions.length}`;
       
       const tip = document.getElementById("listen-status-tip");
       tip.innerText = "Playing audio... 🌸";
       
+      // Putar suara kata secara otomatis
       playSound(current.word, () => {
-        tip.innerText = "Tap 🔊 anytime to replay!";
+        tip.innerText = "Tap 🔊 to listen again";
       });
 
-      // Siapkan 4 pilihan kata bahasa Indonesia yang cocok dengan suara yang didengar
       const distractors = allCurrentVocab
         .filter(item => item.word !== current.word)
         .sort(() => 0.5 - Math.random())
@@ -1148,6 +1154,8 @@
 
       const options = [...distractors, current.word].sort(() => 0.5 - Math.random());
       const optionsContainer = document.getElementById("quiz-listen-options-container");
+      
+      // Bersihkan total elemen opsi lama
       optionsContainer.innerHTML = "";
 
       options.forEach(opt => {
@@ -1180,6 +1188,7 @@
         });
       }
 
+      // Berpindah ke pertanyaan berikutnya dan mereset tombol
       setTimeout(() => {
         currentQuizIndex++;
         if (currentQuizIndex < quizQuestions.length) {
@@ -1192,6 +1201,7 @@
 
     /* === RESULT & AUTO COMPLETE === */
     function showInstantResult() {
+      stopAllAudio();
       document.getElementById("quiz-mc-box").style.display = "none";
       document.getElementById("quiz-listening-box").style.display = "none";
       document.getElementById("quiz-result-box").style.display = "block";
@@ -1212,7 +1222,7 @@
       if (percentage === 100) {
         stars += 2;
         appTitle.innerText = "Pure Perfection! You're Shining ✨";
-        appText.innerHTML = `“Oh wow, ${studentName}! A perfect 100% on Session ${currentSession}! Shelyna is so unbelievably proud of you! Your listening ear is so sharp and accurate ~”`;
+        appText.innerHTML = `“Oh wow, ${studentName}! A perfect 100% on Session ${currentSession}! Shelyna is so unbelievably proud of you! You're picking up Indonesian with such elegance and ease ~”`;
       } else if (percentage >= 80) {
         stars += 2;
         appTitle.innerText = "Wonderfully Done, My Star! 🌸";
@@ -1231,6 +1241,7 @@
     }
 
     function exitQuiz() {
+      stopAllAudio();
       document.getElementById("quiz-view").style.display = "none";
       document.getElementById("lessons-view").style.display = "block";
       updateCompletionBadges();
